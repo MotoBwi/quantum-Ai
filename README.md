@@ -73,7 +73,7 @@ Get all services running in 4 commands:
 
 ```bash
 # Clone repo
-git clone https://github.com/Quantum AIai/voice-ai.git && cd voice-ai
+git clone https://github.com/MotoBwi/quantum-Ai.git
 
 # Setup & build
 make setup-local && make build-all
