@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rapida Widget — Floating</title>
+    <style>
+      body {
+        font-family: "IBM Plex Sans", sans-serif;
+        max-width: 800px;
+        margin: 60px auto;
+        padding: 0 24px;
+        color: #161616;
+      }
+      h1 {
+        margin-bottom: 8px;
+      }
+      p {
+        color: #525252;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Floating Layout</h1>
+    <p>
+      The chat widget appears as a floating button in the bottom-right corner.
+      Click to open the chat panel.
+    </p>
+    <p>This is the default layout mode.</p>
+
+    <script>
+      window.chatbotConfig = {
+        api_base: "http://localhost:8080",
+        assistant_id: "2291436907428577280",
+        token:
+          "e691ea71f5c99bf9e4a53bbd724436ca441d3bf5be1a45a7e7b840ae18d1dfbb",
+        layout: "floating",
+        position: "bottom-right",
+        showLauncher: true,
+        theme: { mode: "light" },
+      };
+    </script>
+    <script
+      defer
+      src="https://cdn-01.rapida.ai/public/scripts/v1.0.0/app.min.js"
+    ></script>
+  </body>
+</html>

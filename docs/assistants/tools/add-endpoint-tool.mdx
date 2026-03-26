@@ -1,0 +1,96 @@
+---
+title: "Endpoint (LLM Call) Tool"
+description: "Configure and use the Endpoint (LLM Call) Tool to make API calls to language models"
+---
+
+The Endpoint (LLM Call) Tool allows your assistant to make API calls to language models when responding to user queries. This guide will walk you through the process of adding and configuring this tool for your assistant.
+
+## Prerequisites
+
+Before adding the Endpoint (LLM Call) Tool, ensure that you have:
+
+- [Created an assistant](/assistants/create-assistant)
+- [Created an endpoint](/endpoint/create-endpoint)
+
+## Adding the Endpoint (LLM Call) Tool
+
+<Steps>
+  <Step title="Navigate to Your Assistant">
+    1. Go to the Assistants section in the main navigation menu.
+    2. Select the assistant you want to configure.
+    3. Click "Configure assistant" in the top right corner.
+    4. Select "Tools and MCP" from the left sidebar menu.
+    5. Click on **Add Tools**.
+  </Step>
+
+<Step title="Configure the Tool">
+    When configuring an Endpoint (LLM Call) tool, you'll need to provide several key elements:
+    
+    1. **Name**: A unique identifier for your tool (e.g., "fetch_user_details")
+       - Use descriptive names that indicate the tool's purpose
+       - Follow a consistent naming convention (e.g., snake_case)
+    
+    2. **Description**: Details on when and how to use the function
+       - Example: "Fetch user name and user role"
+       - Provide clear guidance on the tool's purpose and use cases
+       - This helps the model determine when to invoke the tool
+    
+    3. **Fields**: Define parameters in JSON format following the OpenAI Function Tool Call schema:
+       ```json
+       {
+         "additionalProperties": false,
+         "properties": {
+           "user_name": {
+             "description": "name of user",
+             "type": "string"
+           },
+            "user_role": {
+             "description": "role of user",
+             "type": "string"
+           }
+         },
+          "required": ["user_name", "user_role"]
+       }
+       ```
+       
+       This schema follows the OpenAI Function Tool Call format where `additionalProperties: false` ensures only defined properties are allowed, `properties` defines the parameters the tool accepts with descriptions and data types, and `required` specifies which parameters must be included.
+    
+    4. **Expected Action**: From the list select "Endpoint (LLM Call)".
+    
+    5. **Endpoint Selection**: Choose an existing endpoint from the dropdown, or create a new one.
+       - Select from the dropdown list of available endpoints
+       - Or create a [new endpoint](/endpoint/create-endpoint) directly
+
+  </Step>
+
+  <Step title="Save Configuration">
+    After configuring the tool, click on the **Configure Tool** button to apply your changes.
+  </Step>
+</Steps>
+
+## Using the Endpoint (LLM Call) Tool
+
+Once configured, your assistant will automatically use the Endpoint Tool when appropriate. The process typically follows these steps:
+
+1. The assistant analyzes the user's query or conversation context.
+2. If a specialized task is needed, it calls the Endpoint Tool with the necessary parameters.
+3. The tool makes an API call to the specified endpoint language model.
+4. The assistant incorporates the response from the endpoint language model into its reply.
+
+## Managing the Endpoint (LLM Call) Tool
+
+You can modify or remove the Endpoint Tool at any time:
+
+1. Go to your assistant's configuration page.
+2. Select "Tools and MCP" from the left sidebar menu.
+3. Find the Endpoint Tool in the list.
+4. Click on **Edit Tool** to modify its configuration or **Delete Tool** to delete it.
+
+## Best Practices
+
+- Use the Endpoint Tool for specialized tasks that benefit from additional LLM capabilities.
+- Consider performance implications when making additional API calls.
+- Carefully craft prompts to get the most relevant results from additional models.
+- Test different model configurations to find the optimal settings for your use case.
+
+By effectively configuring and utilizing the Endpoint (LLM Call) Tool, your assistant can leverage specialized language models to enhance its capabilities and provide more sophisticated responses to complex user queries.

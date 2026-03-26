@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rapida Widget — Custom Theme</title>
+  <style>
+    body { font-family: 'IBM Plex Sans', sans-serif; max-width: 800px; margin: 60px auto; padding: 0 24px; color: #161616; }
+    h1 { margin-bottom: 8px; }
+    p { color: #525252; line-height: 1.6; }
+    code { background: #f4f4f4; padding: 2px 6px; font-size: 13px; }
+
+    /* ---- CSS variable overrides ---- */
+    :root {
+      --rpd-primary: #198038;
+      --rpd-primary-hover: #0e6027;
+      --rpd-primary-active: #044317;
+      --rpd-panel-width: 420px;
+      --rpd-border-radius: 8px;
+      --rpd-card-bg: #defbe6;
+      --rpd-card-bg-hover: #a7f0ba;
+      --rpd-bubble-user-bg: #a7f0ba;
+      --rpd-avatar-border: #42be65;
+      --rpd-avatar-icon: #198038;
+    }
+  </style>
+</head>
+<body>
+  <h1>Custom Theme</h1>
+  <p>This example overrides <code>--rpd-*</code> CSS variables to apply a green theme with rounded corners.</p>
+  <p>See <code>sdks/react-widget/src/styles/index.css</code> for the full list of tokens.</p>
+
+  <script>
+    window.chatbotConfig = {
+      assistant_id: "YOUR_ASSISTANT_ID",
+      token: "YOUR_API_KEY",
+      name: "Green Bot",
+      layout: "floating",
+      position: "bottom-right",
+      theme: { mode: "light" },
+    };
+  </script>
+  <script defer src="../../../sdks/react-widget/dist/app.min.js"></script>
+</body>
+</html>

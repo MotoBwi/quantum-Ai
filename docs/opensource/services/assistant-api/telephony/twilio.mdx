@@ -1,0 +1,191 @@
+---
+title: "Twilio"
+description: "Run assistant-api with Twilio for global PSTN voice calls using WebSocket Media Streams."
+sidebarTitle: "Twilio"
+---
+
+Twilio sends a webhook when a call arrives. Rapida responds with TwiML that opens a bidirectional Media Stream (WebSocket) carrying μ-law 8kHz audio.
+
+---
+
+## Vault Credentials
+
+In the Rapida dashboard go to **Credentials → Create Credential**, select provider type **Twilio**:
+
+| Key | Description |
+|-----|-------------|
+| `account_sid` | Twilio Account SID (`ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`) |
+| `account_token` | Twilio Auth Token |
+
+---
+
+## Setup
+
+<Steps>
+
+<Step title="Set PUBLIC_ASSISTANT_HOST">
+
+`PUBLIC_ASSISTANT_HOST` is the public HTTPS hostname Twilio will use to reach your server — for webhooks and the WebSocket media stream.
+
+<Tabs>
+  <Tab title="Production">
+    Set it to your server's public domain in `docker/assistant-api/.assistant.env`:
+
+    ```env
+    PUBLIC_ASSISTANT_HOST=your-server.com   # no https:// prefix
+    ```
+
+    Also update `connection.media` in `ui/src/configs/config.production.json`:
+
+    ```json
+    {
+      "connection": {
+        "media": "https://your-server.com"
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Local Development (ngrok)">
+    Twilio's servers cannot reach `localhost`. Use ngrok to create a public HTTPS tunnel:
+
+    **1. Install and authenticate ngrok**
+    ```bash
+    # macOS
+    brew install ngrok/ngrok/ngrok
+
+    # Linux
+    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+      | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+      | sudo tee /etc/apt/sources.list.d/ngrok.list
+    sudo apt update && sudo apt install ngrok
+
+    ngrok config add-authtoken <your-authtoken>
+    ```
+    Get your authtoken at [dashboard.ngrok.com](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+    **2. Start the tunnel** (keep this running)
+    ```bash
+    ngrok http 8080
+    # Forwarding  https://abc123.ngrok-free.app -> http://localhost:8080
+    ```
+
+    **3. Update two files with the ngrok hostname**
+
+    | File | Field | Value |
+    |------|-------|-------|
+    | `docker/assistant-api/.assistant.env` | `PUBLIC_ASSISTANT_HOST` | `abc123.ngrok-free.app` *(no `https://`)* |
+    | `ui/src/configs/config.development.json` | `connection.media` | `https://abc123.ngrok-free.app` *(with `https://`)* |
+
+    ```env
+    # docker/assistant-api/.assistant.env
+    PUBLIC_ASSISTANT_HOST=abc123.ngrok-free.app
+    ```
+
+    ```json
+    // ui/src/configs/config.development.json
+    {
+      "connection": {
+        "media": "https://abc123.ngrok-free.app"
+      }
+    }
+    ```
+
+    **4. Rebuild**
+    ```bash
+    make rebuild-assistant
+    ```
+
+    <Note>
+    The free ngrok tier generates a new URL on every restart. When it changes, update both files above and re-run `make rebuild-assistant`. Use a [free static domain](https://ngrok.com/blog-post/free-static-domains-ngrok-users) (`ngrok http --domain=your-name.ngrok-free.app 8080`) to avoid this.
+    </Note>
+  </Tab>
+</Tabs>
+</Step>
+
+<Step title="Configure the Twilio phone number webhook">
+In [Twilio Console](https://console.twilio.com) → **Phone Numbers → Manage → Active numbers**, select your number:
+
+| Field | Value |
+|-------|-------|
+| **A call comes in** | Webhook, HTTP POST |
+| **URL** | `https://{PUBLIC_ASSISTANT_HOST}/v1/talk/twilio/call/{assistantId}?x-api-key={apiKey}` |
+| **Status callback URL** | `https://{PUBLIC_ASSISTANT_HOST}/v1/talk/twilio/ctx/{contextId}/event?x-api-key={apiKey}` |
+
+Replace `{assistantId}` with the numeric assistant ID from the Rapida dashboard.
+</Step>
+
+<Step title="Attach vault credential to the assistant">
+In the assistant's **Phone Deployment**, select the Twilio vault credential you created.
+</Step>
+
+<Step title="Verify">
+```bash
+# Check the tunnel is proxying correctly
+curl https://{PUBLIC_ASSISTANT_HOST}/readiness/
+# Expected: {"status":"ok"}
+```
+
+You can monitor Twilio webhook requests in real time at **http://localhost:4040** (ngrok inspector) or in the Twilio Console under **Monitor → Logs → Calls**.
+</Step>
+
+</Steps>
+
+<Warning>
+`PUBLIC_ASSISTANT_HOST` must be HTTPS. Twilio rejects plain HTTP webhook URLs and `ws://` WebSocket connections — always use `https://` for the webhook URL and `wss://` for the media stream (Rapida handles this automatically).
+</Warning>
+
+---
+
+## What Rapida Returns
+
+When Twilio hits the inbound webhook, Rapida responds with TwiML connecting a Media Stream:
+
+```xml
+<Response>
+  <Connect>
+    <Stream url="wss://{PUBLIC_ASSISTANT_HOST}/v1/talk/twilio/ctx/{contextId}?x-api-key={apiKey}"
+            name="{assistantId}__{conversationId}"
+            statusCallback="https://{PUBLIC_ASSISTANT_HOST}/v1/talk/twilio/ctx/{contextId}/event?x-api-key={apiKey}"
+            statusCallbackEvent="initiated ringing answered completed">
+      <Parameter name="assistant_id" value="{assistantId}"/>
+      <Parameter name="client_number" value="{callerNumber}"/>
+    </Stream>
+  </Connect>
+</Response>
+```
+
+---
+
+## Outbound Calls
+
+Rapida calls `client.Api.CreateCall` via the Twilio Go SDK. The `StatusCallback`, `StatusCallbackEvent`, and `Twiml` are constructed automatically from `PUBLIC_ASSISTANT_HOST`. No additional configuration is required beyond the vault credential.
+
+---
+
+## Audio Spec
+
+| Property | Value |
+|----------|-------|
+| Encoding | μ-law (PCMU) 8-bit |
+| Sample rate | 8000 Hz |
+| Channels | Mono |
+| Transport | Base64-encoded JSON frames (Media Streams spec) |
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Vonage" icon="phone" href="/opensource/services/assistant-api/telephony/vonage">
+    Global PSTN alternative with higher audio quality
+  </Card>
+  <Card title="Exotel" icon="phone" href="/opensource/services/assistant-api/telephony/exotel">
+    India / SEA PSTN
+  </Card>
+  <Card title="Telephony Overview" icon="network" href="/opensource/services/assistant-api/telephony/overview">
+    All providers and URL routing reference
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/opensource/services/assistant-api/configuration">
+    Full env var reference
+  </Card>
+</CardGroup>

@@ -1,0 +1,102 @@
+---
+title: "Create knowledge"
+description: "Learn how to create a new knowledge base in the system"
+---
+
+## Prerequisites
+
+Before creating a knowledge base, ensure that you have set up an embedding model with Rapida. To set up an embedding model:
+
+1. Navigate to the Embedding Models section in your Rapida dashboard.
+2. Select the embedding model provider you want to use (e.g., OpenAI, Cohere, etc).
+3. Follow the provider-specific instructions to complete the setup.
+
+For detailed instructions on setting up embedding models, refer to the provider-specific documentation in the Embedding Models section:
+
+- [OpenAI](/integrations/llm/openai)
+- [Google AI](/integrations/llm/google-ai)
+- [Cohere](/integrations/llm/cohere)
+
+<Steps>
+  <Step title="Navigate to Knowledge">
+    Begin by navigating to the Knowledge section in the main navigation menu.
+
+    ![Navigate to Knowledge](/images/create_knowledge/create_knowledge_1.png)
+
+  </Step>
+
+  <Step title="Initiate Knowledge Base Creation">
+    Click on the "Add new knowledge" button to start the process of creating a new knowledge base.
+
+    ![Initiate Knowledge Base Creation](/images/create_knowledge/create_knowledge_2.png)
+
+  </Step>
+
+  <Step title="Select Embedding Model and Credentials">
+    First, select an appropriate embedding model for your knowledge base by clicking the dropdown menu.
+
+    ![Choose Embedding Model](/images/create_knowledge/create_knowledge_4.png)
+
+    After selecting the embedding model provider, you'll need to select the credentials to use:
+
+    1. Click the "Select credential" dropdown in the Credential section
+    2. Choose from existing credentials for the selected provider, or click the "+" button to add a new credential
+    3. If adding a new credential, you'll need to provide:
+       - A name for the credential
+       - The API key or required authentication information for the selected provider
+
+    Different providers require different credential information:
+    - **OpenAI**: API key
+    - **VoyageAI**: API key
+    - **Google AI**: API key
+    - **Cohere**: API key
+
+    For detailed instructions on setting up credentials for each provider, refer to the respective integration documentation linked in the Prerequisites section.
+
+  </Step>
+
+  <Step title="Enter Basic Information">
+    Complete all required fields in the knowledge base creation form:
+
+    1. **Name**: Enter a descriptive name for your knowledge base in the text field (e.g., "Our website database").
+    2. **Description**: Provide a brief explanation of the purpose of this knowledge base or what type of content it contains.
+    3. **Tags**: Add relevant tags to make your knowledge base easier to find. Separate tags with commas and press Enter to confirm each tag.
+    4. **Review Information**: Double-check all entered information for accuracy.
+    5. **Create Knowledge Base**: Click the blue "Create knowledge" button in the bottom right corner to proceed.
+
+    ![Enter Basic Information](/images/create_knowledge/create_knowledge_5.png)
+
+  </Step>
+
+  <Step title="Upload Content">
+    Upload the relevant content for your knowledge base:
+
+    - Drag and drop files or click to select files from your computer
+    - Supported file formats will be processed and added to your knowledge base
+
+    ![Upload Content](/images/create_knowledge/create_knowledge_6.png)
+
+  </Step>
+
+  <Step title="Review and Create">
+    Review all the information and settings for your knowledge base.
+    Click "**Upload new Document**" to finalize the creation process.
+
+    ![Review and Create](/images/create_knowledge/create_knowledge_7.png)
+
+  </Step>
+
+  <Step title="Success Confirmation">
+    You'll see a confirmation that your knowledge base has been created successfully.
+    The parsing and tokenization of the documents will take a while.
+
+    ![Parsing documents](/images/create_knowledge/create_knowledge_8.png)
+
+    Once the process is complete, you'll see a success message.
+
+    ![Document Parsing Success](/images/create_knowledge/create_knowledge_9.png)
+
+    You can now start using your new knowledge base with assistants or upload more documents.
+
+  </Step>
+</Steps>

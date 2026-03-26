@@ -1,0 +1,332 @@
+---
+title: "Endpoint API"
+description: "Webhook and callback management. Routes post-call events to external systems with configurable retry, signature verification, and delivery history."
+sidebarTitle: "Endpoint API"
+---
+
+## Overview
+
+The `endpoint-api` delivers conversation events to external HTTP endpoints. When a call starts, ends, or a message is exchanged, `assistant-api` emits events to `endpoint-api` via gRPC. This service handles fan-out to all registered webhooks, retry with exponential backoff, and delivery tracking.
+
+<CardGroup cols={3}>
+  <Card title="Port" icon="server">
+    `9005` — HTTP · gRPC (cmux)
+  </Card>
+  <Card title="Language" icon="code">
+    Go 1.25
+    Gin (REST) + gRPC
+  </Card>
+  <Card title="Storage" icon="database">
+    PostgreSQL `endpoint_db`
+    Redis (job queue)
+  </Card>
+</CardGroup>
+
+---
+
+## Components
+
+<AccordionGroup>
+
+<Accordion title="Webhook Registry">
+
+Stores webhook configurations scoped to a project. Each webhook targets one URL and subscribes to one or more event types.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Human-readable label |
+| `url` | string | Destination HTTPS endpoint |
+| `events` | string[] | Subscribed event types |
+| `is_active` | bool | Enable / disable without deleting |
+| `secret` | string | HMAC signing secret |
+| `max_retries` | int | Default: `5` |
+| `timeout_ms` | int | Default: `30000` |
+| `headers` | JSON | Custom headers sent with each delivery |
+
+</Accordion>
+
+<Accordion title="Event Routing">
+
+When `assistant-api` calls `endpoint-api` with an event, the service:
+
+1. Resolves all active webhooks for the project that subscribe to the event type.
+2. Creates a delivery record per webhook.
+3. Signs the payload with HMAC-SHA256 using the webhook's `secret`.
+4. Attempts delivery with the configured timeout.
+5. On failure: re-queues via Redis with exponential backoff.
+
+</Accordion>
+
+<Accordion title="Retry Strategy">
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | Immediate |
+| 2 | 5 seconds |
+| 3 | 25 seconds |
+| 4 | 2 minutes |
+| 5 | 10 minutes |
+
+Retries are triggered for HTTP status `408`, `429`, and `5xx`. Status codes `2xx` are treated as success. Status codes `4xx` (except `408`, `429`) are treated as non-retriable failures.
+
+</Accordion>
+
+<Accordion title="Payload Signing">
+
+Every delivery includes an `X-Rapida-Signature` header:
+
+```
+X-Rapida-Signature: sha256=<hmac-sha256-hex>
+```
+
+**Verification example (Node.js)**
+
+```javascript
+const crypto = require('crypto');
+
+function verifySignature(rawBody, signatureHeader, secret) {
+  const expected = 'sha256=' + crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(signatureHeader),
+    Buffer.from(expected)
+  );
+}
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+---
+
+## Event Reference
+
+| Event | Trigger | Key Payload Fields |
+|-------|---------|-------------------|
+| `conversation.started` | Call begins | `conversation_id`, `assistant_id`, `timestamp` |
+| `conversation.ended` | Call terminates | `conversation_id`, `duration_ms`, `messages_count`, `end_reason` |
+| `message.sent` | Assistant speaks | `conversation_id`, `message_id`, `content`, `role` |
+| `message.received` | User speaks | `conversation_id`, `message_id`, `content`, `role` |
+| `assistant.updated` | Config changed | `assistant_id`, `changes` |
+| `assistant.deleted` | Assistant removed | `assistant_id`, `timestamp` |
+| `error.occurred` | Pipeline error | `conversation_id`, `error_code`, `error_message` |
+
+**Example payload — `conversation.ended`**
+
+```json
+{
+  "id": "evt_1234567890abcdef",
+  "type": "conversation.ended",
+  "timestamp": 1704067200000,
+  "data": {
+    "conversation_id": "conv_abc123",
+    "assistant_id": "asst_def456",
+    "duration_ms": 125000,
+    "messages_count": 8,
+    "end_reason": "user_hangup"
+  }
+}
+```
+
+---
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/readiness/` | Readiness probe |
+| `GET` | `/healthz/` | Liveness probe |
+| `POST` | `/api/v1/endpoint/webhooks` | Create webhook |
+| `GET` | `/api/v1/endpoint/webhooks` | List webhooks |
+| `GET` | `/api/v1/endpoint/webhooks/{id}` | Get webhook |
+| `PUT` | `/api/v1/endpoint/webhooks/{id}` | Update webhook |
+| `DELETE` | `/api/v1/endpoint/webhooks/{id}` | Delete webhook |
+| `POST` | `/api/v1/endpoint/webhooks/{id}/test` | Send test event |
+| `GET` | `/api/v1/endpoint/webhooks/{id}/deliveries` | List delivery history |
+| `POST` | `/api/v1/endpoint/webhooks/{id}/replay` | Replay a specific event |
+
+**Create a webhook**
+
+```bash
+curl -X POST http://localhost:9005/api/v1/endpoint/webhooks \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "CRM Sync",
+    "url": "https://crm.example.com/webhooks/rapida",
+    "events": ["conversation.ended", "message.sent"],
+    "headers": { "Authorization": "Bearer crm-api-key" },
+    "max_retries": 5,
+    "timeout_ms": 30000
+  }'
+```
+
+**Test a webhook**
+
+```bash
+curl -X POST http://localhost:9005/api/v1/endpoint/webhooks/{id}/test \
+  -H "Authorization: Bearer <jwt>"
+```
+
+---
+
+## Configuration
+
+Edit `docker/endpoint-api/.endpoint.env` before starting the service.
+
+### Required variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `SECRET` | ✅ Yes | `rpd_pks` | JWT signing secret — must match all services |
+| `POSTGRES__HOST` | ✅ Yes | `postgres` | PostgreSQL host |
+| `POSTGRES__DB_NAME` | ✅ Yes | `endpoint_db` | Database name |
+| `POSTGRES__AUTH__USER` | ✅ Yes | `rapida_user` | Database user |
+| `POSTGRES__AUTH__PASSWORD` | ✅ Yes | — | Database password |
+| `REDIS__HOST` | ✅ Yes | `redis` | Redis host (job queue for retries) |
+
+### Tuning variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LOG_LEVEL` | `debug` | `debug` · `info` · `warn` · `error` |
+| `WEBHOOK_MAX_RETRIES` | `5` | Maximum delivery attempts per event |
+| `WEBHOOK_RETRY_DELAY` | `5000` | Initial retry delay in milliseconds |
+| `WEBHOOK_TIMEOUT` | `30000` | HTTP call timeout in milliseconds |
+
+### Full environment file
+
+```env
+# ── Service identity ──────────────────────────────────────────────
+SERVICE_NAME=endpoint-api
+HOST=0.0.0.0
+PORT=9005
+LOG_LEVEL=debug
+SECRET=rpd_pks
+ENV=development
+
+# ── PostgreSQL ────────────────────────────────────────────────────
+POSTGRES__HOST=postgres
+POSTGRES__PORT=5432
+POSTGRES__DB_NAME=endpoint_db
+POSTGRES__AUTH__USER=rapida_user
+POSTGRES__AUTH__PASSWORD=rapida_db_password
+POSTGRES__MAX_OPEN_CONNECTION=15
+POSTGRES__MAX_IDEAL_CONNECTION=8
+POSTGRES__SSL_MODE=disable
+
+# ── Redis (retry job queue) ───────────────────────────────────────
+REDIS__HOST=redis
+REDIS__PORT=6379
+REDIS__DB=2
+REDIS__MAX_CONNECTION=10
+
+# ── Webhook delivery settings ─────────────────────────────────────
+WEBHOOK_MAX_RETRIES=5
+WEBHOOK_RETRY_DELAY=5000
+WEBHOOK_TIMEOUT=30000
+```
+
+---
+
+## Running
+
+<Tabs>
+
+<Tab title="Docker Compose">
+
+```bash
+make up-endpoint
+
+make logs-endpoint
+
+make rebuild-endpoint
+```
+
+</Tab>
+
+<Tab title="From Source">
+
+Requires Go 1.25, PostgreSQL 15, and Redis 7 running locally.
+
+```bash
+export $(grep -v '^#' docker/endpoint-api/.endpoint.env | xargs)
+export POSTGRES__HOST=localhost
+export REDIS__HOST=localhost
+
+go run cmd/endpoint/endpoint.go
+```
+
+</Tab>
+
+</Tabs>
+
+---
+
+## Health & Observability
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /readiness/` | Reports whether the service is ready |
+| `GET /healthz/` | Liveness probe |
+
+```bash
+curl http://localhost:9005/readiness/
+```
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+
+<Accordion title="Webhook not receiving events">
+1. Check the webhook is active: `GET /api/v1/endpoint/webhooks/{id}`
+2. Verify the event type is in the webhook's `events` list.
+3. Review delivery history: `GET /api/v1/endpoint/webhooks/{id}/deliveries`
+4. Send a test event: `POST /api/v1/endpoint/webhooks/{id}/test`
+</Accordion>
+
+<Accordion title="All deliveries failing with connection error">
+- Verify the destination URL is publicly reachable (not `localhost` or a private IP).
+- Confirm the TLS certificate on the destination is valid.
+- Check for firewall rules blocking outbound HTTP from the `endpoint-api` container.
+
+```bash
+# Test connectivity from inside the container
+docker exec endpoint-api curl -v https://your-webhook-endpoint.com
+```
+</Accordion>
+
+<Accordion title="Replay a failed event">
+```bash
+curl -X POST http://localhost:9005/api/v1/endpoint/webhooks/{id}/replay \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"event_id": "evt_1234567890abcdef"}'
+```
+</Accordion>
+
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Assistant API" icon="mic" href="/opensource/services/assistant-api">
+    Event emitter — fires conversation events to endpoint-api.
+  </Card>
+  <Card title="Document API" icon="book-open" href="/opensource/services/document-api">
+    Knowledge base and RAG pipeline.
+  </Card>
+  <Card title="Architecture" icon="network" href="/opensource/architecture">
+    Full system topology and data flows.
+  </Card>
+  <Card title="Configuration Reference" icon="sliders" href="/opensource/configuration">
+    Full environment variable reference.
+  </Card>
+</CardGroup>

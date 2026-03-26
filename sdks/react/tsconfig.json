@@ -1,0 +1,45 @@
+{
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "strict": true,
+        "declarationDir": "./dist/types",
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
+        "module": "Node16",
+        "target": "ESNext",
+        "lib": [
+            "esnext",
+            "dom",
+        ],
+        "rootDir": "src", // Add this line,
+        "declarationMap": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "jsx": "react-jsx",
+        "declaration": true,
+        "moduleResolution": "node16",
+        "types": [
+            "node"
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": false,
+        "strictNullChecks": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": true,
+        "paths": {
+            "@/rapida/*": [
+                "./src/*"
+            ]
+        },
+        "skipLibCheck": true
+    },
+}

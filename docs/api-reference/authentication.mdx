@@ -1,0 +1,179 @@
+---
+title: "Authentication"
+description: "Authentication and connection to use SDK"
+---
+
+Use `ConnectionConfig` to configure authentication and endpoints for all SDK clients.
+
+<CodeGroup>
+
+```ts TypeScript / Node.js
+import { ConnectionConfig } from "@rapidaai/nodejs";
+
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithSDK({ ApiKey: process.env.RAPIDA_API_KEY })
+);
+```
+
+```javascript React
+import { ConnectionConfig } from "@rapidaai/react";
+
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithSDK({ ApiKey: process.env.RAPIDA_API_KEY })
+);
+```
+
+```go Go
+
+import (
+  "os"
+  "github.com/rapidaai/rapida-go/rapida/connections"
+)
+
+connectionConfig := connections.DefaultconnectionConfig(
+    connections.WithSDK(
+        os.Getenv("RAPIDA_API_KEY"),
+    ),
+)
+```
+
+```python Python
+import os
+from rapida import ConnectionConfig
+
+connection_config = ConnectionConfig.default_connection_config(
+    ConnectionConfig.with_sdk(api_key=os.getenv("RAPIDA_API_KEY"))
+)
+```
+
+</CodeGroup>
+
+#### PersonalToken
+
+- Use for backend-only or administrative operations where a human- or service-owned token is appropriate (e.g., CI/CD, provisioning, migrations).
+- Best when you need elevated privileges across projects or organization-level APIs.
+- Never embed in client-side code. Store securely (vault/secret manager) and rotate regularly.
+
+  <ResponseField name="Authorization" type="string">
+    Personal token for administrative APIs.
+  </ResponseField>
+  <ResponseField name="AuthId" type="string">
+    Rapida Auth ID performing the action.
+  </ResponseField>
+  <ResponseField name="ProjectId" type="string">
+    Rapida project ID for scoping requests.
+  </ResponseField>
+
+<CodeGroup>
+
+```ts TypeScript / Node.js
+import { ConnectionConfig } from "@rapidaai/nodejs";
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithPersonalToken({
+    Authorization: RAPIDA_AUTHORIZATION_TOKEN,
+    AuthId: RAPIDA_AUTH_ID,
+    ProjectId: RAPIDA_PROJECT_ID,
+  })
+);
+```
+
+```javascript React
+import { ConnectionConfig } from "@rapidaai/react";
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithPersonalToken({
+    Authorization: RAPIDA_AUTHORIZATION_TOKEN,
+    AuthId: RAPIDA_AUTH_ID,
+    ProjectId: RAPIDA_PROJECT_ID,
+  })
+);
+```
+
+```go Go
+
+import (
+  "os"
+  "github.com/rapidaai/rapida-go/rapida/connections"
+)
+
+connectionConfig := connections.DefaultconnectionConfig(
+    connections.WithPersonalToken(
+        os.Getenv("RAPIDA_AUTHORIZATION_TOKEN"),
+        os.Getenv("RAPIDA_AUTH_ID"),
+        os.Getenv("RAPIDA_PROJECT_ID"),
+    ),
+)
+```
+
+```python Python
+from rapida import (
+    ConnectionConfig,
+)
+
+connectionConfig = ConnectionConfig.default_connection_config(
+    ConnectionConfig.with_personal_token(
+        authorization="RAPIDA_AUTHORIZATION_TOKEN",
+        auth_id="RAPIDA_AUTH_ID",
+        project_id="RAPIDA_PROJECT_ID",
+    )
+)
+```
+
+</CodeGroup>
+
+#### WithSDK
+
+- Use for typical application integrations (server-side web apps, backend services) using a project-scoped API key.
+- Safer to use in application servers than personal tokens; permissions are limited to the project.
+- Do not ship in public client apps without a proxy; prefer server-to-server.
+
+  <ResponseField name="ApiKey" type="string">
+    Project API key used for typical app integrations.
+  </ResponseField>
+  <ResponseField name="UserId" type="string">
+    Optional user identifier to propagate in requests.
+  </ResponseField>
+
+<CodeGroup>
+
+```ts TypeScript / Node.js
+import { ConnectionConfig } from "@rapidaai/nodejs";
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithSDK({ ApiKey: process.env.RAPIDA_API_KEY })
+);
+```
+
+```javascript React
+import { ConnectionConfig } from "@rapidaai/react";
+const connection = ConnectionConfig.DefaultConnectionConfig(
+  ConnectionConfig.WithSDK({ ApiKey: process.env.RAPIDA_API_KEY })
+);
+```
+
+```go Go
+
+import (
+  "os"
+  "github.com/rapidaai/rapida-go/rapida/connections"
+)
+
+connectionConfig := connections.DefaultconnectionConfig(
+    connections.WithSDK(
+        os.Getenv("RAPIDA_API_KEY"),
+    ),
+)
+```
+
+```python Python
+from rapida import (
+    ConnectionConfig,
+)
+
+
+connectionConfig = ConnectionConfig.default_connection_config(
+    ConnectionConfig.with_sdk(
+        api_key="API_KEY"
+    )
+)
+```
+
+</CodeGroup>

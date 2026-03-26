@@ -1,0 +1,55 @@
+{
+    "name": "@rapidaai/nodejs",
+    "version": "1.0.20",
+    "description": "NodeJS sdk for rapidaai platform",
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rimraf dist",
+        "prepare": "npm run build",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/rapidaai/rapida-nodejs.git"
+    },
+    "keywords": [
+        "rapida"
+    ],
+    "author": "Prashant Srivastav <prashant@rapida.ai>",
+    "bugs": {
+        "url": "https://github.com/rapidaai/rapida-nodejs/issues"
+    },
+    "homepage": "https://github.com/rapidaai/rapida-nodejs#readme",
+    "devDependencies": {
+        "@types/jest": "^29.5.12",
+        "@types/node": "^24.0.7",
+        "grpc-tools": "^1.13.0",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.2",
+        "ts-proto": "^2.7.5",
+        "ts-protoc-gen": "^0.15.1-pre.a71b34e",
+        "tsup": "^8.5.0",
+        "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "@bufbuild/protobuf": "^2.9.0",
+        "@grpc/grpc-js": "^1.13.4",
+        "@grpc/proto-loader": "^0.7.15",
+        "@types/google-protobuf": "^3.15.12",
+        "google-protobuf": "^3.21.4",
+        "moment": "^2.30.1"
+    }
+}

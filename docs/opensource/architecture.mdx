@@ -1,0 +1,351 @@
+---
+title: "Architecture Overview"
+description: "System architecture, service topology, and data flows for the Rapida Voice AI Platform"
+sidebarTitle: "Architecture"
+---
+
+## System Architecture
+
+Rapida is a Go-based microservices platform (module: `github.com/rapidaai`, Go 1.25). Services communicate over gRPC internally and expose REST and gRPC-web APIs via a shared Nginx gateway on port 8080. A single TCP port per service multiplexes HTTP/2 (gRPC), grpc-web, and HTTP/1.1 using [cmux](https://github.com/soheilhy/cmux).
+
+```mermaid
+graph TD
+    subgraph Clients
+        Browser["Browser / Web App"]
+        Phone["Phone / SIP Client"]
+        SDK["Server SDK (Go · Python · Node)"]
+    end
+
+    Nginx["Nginx Gateway :8080\n(Reverse Proxy · SSL/TLS · gRPC-Web)"]
+
+    subgraph Services["Rapida Services"]
+        UI["ui :3000\nReact Dashboard"]
+        WebAPI["web-api :9001\nAuth · Orgs · Vault"]
+        AssistantAPI["assistant-api :9007\nVoice Orchestration\nSTT · LLM · TTS\nSIP :4573"]
+        IntegrationAPI["integration-api :9004\nLLM / STT / TTS\nProvider Integrations"]
+        EndpointAPI["endpoint-api :9005\nWebhooks · Callbacks"]
+        DocumentAPI["document-api :9010\nRAG · Embeddings\nKnowledge Base"]
+    end
+
+    subgraph Infra["Infrastructure"]
+        PG[("PostgreSQL :5432")]
+        Redis[("Redis :6379")]
+        OS[("OpenSearch :9200")]
+    end
+
+    subgraph Providers["External Providers"]
+        LLMs["LLMs\nOpenAI · Anthropic · Gemini\nAzure · Bedrock · Mistral · Cohere"]
+        STT_P["STT\nDeepgram · Google · Azure\nAssemblyAI · Cartesia"]
+        TTS_P["TTS\nElevenLabs · Azure · Google\nDeepgram · Cartesia"]
+        Tel["Telephony\nTwilio · Vonage · Exotel · SIP"]
+    end
+
+    Browser --> Nginx
+    SDK --> Nginx
+    Phone -->|"SIP :4573 / AudioSocket"| AssistantAPI
+    Nginx --> UI
+    Nginx --> WebAPI
+    Nginx -->|"WebSocket upgrade\n/talk_api.TalkService/AssistantTalk"| AssistantAPI
+    Nginx -->|"gRPC-web / REST\n/talk_api · /web_api · /vault_api ..."| WebAPI
+
+    WebAPI -->|gRPC| AssistantAPI
+    WebAPI -->|gRPC| IntegrationAPI
+    WebAPI -->|gRPC| EndpointAPI
+    WebAPI -->|HTTP| DocumentAPI
+    AssistantAPI -->|gRPC| IntegrationAPI
+    AssistantAPI -->|gRPC| EndpointAPI
+
+    WebAPI --> PG
+    AssistantAPI --> PG
+    IntegrationAPI --> PG
+    EndpointAPI --> PG
+    DocumentAPI --> PG
+
+    WebAPI --> Redis
+    AssistantAPI --> Redis
+    DocumentAPI --> Redis
+
+    AssistantAPI --> OS
+    DocumentAPI --> OS
+
+    IntegrationAPI --> LLMs
+    IntegrationAPI --> STT_P
+    IntegrationAPI --> TTS_P
+    AssistantAPI --> Tel
+```
+
+---
+
+## Service Responsibilities
+
+| Service             | Port      | Language | Responsibility                                      |
+| ------------------- | --------- | -------- | --------------------------------------------------- |
+| **web-api**         | 9001      | Go       | Auth, organizations, projects, credential vault     |
+| **assistant-api**   | 9007      | Go       | Voice orchestration, STT/TTS pipeline, telephony    |
+| **integration-api** | 9004      | Go       | LLM/STT/TTS provider integrations, OAuth            |
+| **endpoint-api**    | 9005      | Go       | Webhook management, event routing, retry            |
+| **document-api** *(optional)* | 9010 | Python | Document processing, embeddings, RAG (FastAPI) — knowledge base only |
+| **ui**              | 3000      | React/TS | Frontend dashboard                                  |
+| **nginx**           | 8080      | —        | Reverse proxy, WebSocket upgrade, SSL/TLS           |
+
+<Info>
+  **document-api** and **opensearch** are optional. They are only needed for knowledge base / RAG features. Voice assistants (STT/LLM/TTS) work fully without them.
+</Info>
+
+---
+
+## Nginx Routing
+
+The Nginx gateway at port 8080 routes requests based on the gRPC service path prefix:
+
+| Path Pattern                              | Upstream          | Protocol         |
+| ----------------------------------------- | ----------------- | ---------------- |
+| `/talk_api.TalkService/AssistantTalk`     | assistant-api:9007 | WebSocket upgrade |
+| `/talk_api`                               | assistant-api:9007 | gRPC-web         |
+| `/tool_api`, `/web_api`, `/vault_api`, `/workflow_api`, `/assistant_api`, `/knowledge_api`, `/connect_api`, `/lead_api` | web-api:9001 | gRPC-web |
+| `/rapida-data/assets/workflow/`           | Static files      | HTTP             |
+| `/`                                       | web-api:9001      | HTTP proxy       |
+
+> **Real-time audio** connections use the WebSocket upgrade path. The browser SDK connects to `ws://hostname:8080/talk_api.TalkService/AssistantTalk` for bidirectional audio streaming.
+
+---
+
+## Data Layer
+
+### PostgreSQL Databases
+
+PostgreSQL 15 is the primary relational store. Each service owns a dedicated database. The `init.sql` initializes all required databases on first container start.
+
+| Database         | Owners                        | Purpose                                           |
+| ---------------- | ----------------------------- | ------------------------------------------------- |
+| `web_db`         | web-api                       | Users, organizations, projects, API keys, vault   |
+| `assistant_db`   | assistant-api, document-api   | Assistants, conversations, messages, embeddings   |
+| `integration_db` | integration-api               | Integrations, provider credentials, OAuth tokens  |
+| `endpoint_db`    | endpoint-api                  | Webhooks, endpoints, delivery logs                |
+
+```
+PostgreSQL :5432
+├── web_db        ← web-api
+├── assistant_db  ← assistant-api + document-api
+├── integration_db ← integration-api
+└── endpoint_db   ← endpoint-api
+```
+
+> The `web_db` is defined as the default database in `POSTGRES_DB` in docker-compose and created automatically by the PostgreSQL image. The remaining three databases are created by `docker/postgres/init.sql`.
+
+### Redis Databases
+
+Redis 7 serves as the in-memory cache, session store, and job broker.
+
+| DB  | Purpose                                          |
+| --- | ------------------------------------------------ |
+| 0   | General application cache (GORM second-level cache) |
+| 1   | Session / auth token cache                       |
+| 2   | Celery job broker (document-api background jobs) |
+
+### OpenSearch Indices (Optional — Knowledge Base Only)
+
+OpenSearch 2.11.1 handles full-text search and vector similarity search. It is only required when running with the knowledge base profile (`make up-all-with-knowledge`).
+
+| Index                     | Producer          | Purpose                                  |
+| ------------------------- | ----------------- | ---------------------------------------- |
+| `assistant-conversations` | assistant-api     | Searchable conversation transcripts      |
+| `conversation-metrics`    | assistant-api     | Call latency and quality metrics         |
+| `documents-*`             | document-api      | Knowledge base chunks and embeddings     |
+| `logs-*`                  | assistant-api     | Structured application logs              |
+
+---
+
+## Data Flows
+
+### 1. User Authentication
+
+```mermaid
+sequenceDiagram
+    participant UI as Browser (UI :3000)
+    participant Nginx as Nginx :8080
+    participant Web as web-api :9001
+    participant PG as PostgreSQL (web_db)
+    participant Cache as Redis
+
+    UI->>Nginx: POST /web_api.AuthService/Login
+    Nginx->>Web: gRPC-web forward
+    Web->>PG: Verify credentials
+    PG-->>Web: User record
+    Web->>Cache: Store session token
+    Web-->>UI: JWT + refresh token
+```
+
+### 2. Voice Conversation
+
+```mermaid
+sequenceDiagram
+    participant Client as Phone / Browser
+    participant Nginx as Nginx :8080
+    participant Asst as assistant-api :9007
+    participant Integ as integration-api :9004
+    participant LLM as LLM Provider
+    participant STT as STT Provider
+    participant TTS as TTS Provider
+    participant PG as PostgreSQL
+    participant OS as OpenSearch
+    participant EP as endpoint-api :9005
+
+    Client->>Nginx: WebSocket /talk_api.TalkService/AssistantTalk
+    Nginx->>Asst: WebSocket upgrade (keepalive 64)
+    Asst->>PG: Create conversation record
+    Client->>Asst: Stream PCM / G.711 audio
+    Asst->>Asst: VAD: voice activity detected
+    Asst->>STT: Stream audio chunks
+    STT-->>Asst: Transcribed text
+    Asst->>Integ: gRPC: execute LLM with transcript + context
+    Integ->>LLM: Forward with system prompt + history
+    LLM-->>Integ: Stream response tokens
+    Integ-->>Asst: Streamed tokens
+    Asst->>TTS: Text → audio synthesis
+    TTS-->>Asst: Audio chunks
+    Asst-->>Client: Stream synthesized audio
+    Asst->>PG: Persist messages (assistant_db)
+    Asst->>OS: Index conversation transcript
+    Asst->>EP: gRPC: fire conversation.message webhook
+    EP->>EP: Deliver to registered endpoints (with retry)
+```
+
+### 3. Inbound Phone Call (Twilio / Vonage)
+
+```mermaid
+sequenceDiagram
+    participant Tel as Telephony Provider
+    participant Asst as assistant-api :9007
+    participant Integ as integration-api :9004
+    participant EP as endpoint-api :9005
+
+    Tel->>Asst: Webhook: inbound call event
+    Asst->>Asst: Resolve assistant for this number
+    Asst->>Integ: Fetch LLM + STT + TTS credentials
+    Tel->>Asst: Stream audio (WebSocket / SIP)
+    Note over Asst: STT → LLM → TTS pipeline runs
+    Asst-->>Tel: Stream synthesized audio
+    Asst->>EP: Fire conversation.started webhook
+    Tel->>Asst: Call ended
+    Asst->>EP: Fire conversation.ended webhook
+```
+
+### 4. SIP / Asterisk Connection
+
+```mermaid
+sequenceDiagram
+    participant Asterisk as Asterisk PBX
+    participant Asst as assistant-api :4573
+
+    Asterisk->>Asst: AudioSocket TCP connect :4573
+    Asst->>Asst: Resolve assistant configuration
+    Asterisk->>Asst: Stream G.711 µ-law audio frames
+    Asst-->>Asterisk: Stream synthesized audio frames
+    Asterisk->>Asst: Hangup signal
+    Asst->>Asst: End conversation, persist record
+```
+
+### 5. Document Upload and RAG Indexing
+
+```mermaid
+sequenceDiagram
+    participant UI as Dashboard (UI)
+    participant Web as web-api :9001
+    participant Doc as document-api :9010
+    participant PG as PostgreSQL (assistant_db)
+    participant Redis as Redis (Celery queue)
+    participant OS as OpenSearch
+
+    UI->>Web: Upload document (PDF/DOCX/etc.)
+    Web->>Doc: HTTP POST /api/v1/document/upload
+    Doc->>PG: Store document metadata
+    Doc->>Redis: Enqueue process_document Celery task
+    Doc-->>Web: { document_id, status: "processing" }
+    Redis->>Doc: Worker picks up task
+    Doc->>Doc: Extract text → chunk → embed
+    Doc->>PG: Store chunks + embeddings
+    Doc->>OS: Index chunks for full-text search
+    Doc->>PG: Update status: "completed"
+```
+
+---
+
+## Communication Patterns
+
+### Synchronous
+
+| Pattern       | Used For                                          | Implementation         |
+| ------------- | ------------------------------------------------- | ---------------------- |
+| **REST/HTTP** | External-facing API calls, health checks          | Gin framework          |
+| **gRPC**      | Inter-service calls (typed, schema-enforced)      | gRPC + protobuf        |
+| **gRPC-web**  | Browser → backend (gRPC over HTTP/1.1)            | improbable-eng grpc-web |
+| **WebSocket** | Real-time audio streaming (assistant-api)         | gorilla/websocket      |
+
+### Asynchronous
+
+| Pattern            | Used For                                          | Implementation         |
+| ------------------ | ------------------------------------------------- | ---------------------- |
+| **Redis Pub/Sub**  | Real-time session updates, notifications          | go-redis               |
+| **Celery tasks**   | Document processing, embedding generation         | Redis broker           |
+| **Webhooks**       | External event delivery with retry                | endpoint-api           |
+
+---
+
+## Port Reference
+
+| Service         | Port | Protocol          | Notes                                              |
+| --------------- | ---- | ----------------- | -------------------------------------------------- |
+| nginx           | 8080 | HTTP / WebSocket  | External entry point                               |
+| ui              | 3000 | HTTP              | React development server / production build        |
+| web-api         | 9001 | HTTP + gRPC + gRPC-web | cmux multiplexed                              |
+| assistant-api   | 9007 | HTTP + gRPC + WebSocket | cmux multiplexed; real-time audio              |
+| assistant-api   | 4573 | TCP (AudioSocket) | Asterisk AudioSocket integration                   |
+| integration-api | 9004 | HTTP + gRPC       | cmux multiplexed                                   |
+| endpoint-api    | 9005 | HTTP + gRPC       | cmux multiplexed                                   |
+| document-api    | 9010 | HTTP (FastAPI)    | ASGI / uvicorn                                     |
+| PostgreSQL      | 5432 | TCP               | Internal only (not exposed publicly)               |
+| Redis           | 6379 | TCP               | Internal only                                      |
+| OpenSearch      | 9200 | HTTP              | Internal; 9600 for metrics                         |
+
+---
+
+## Scaling
+
+All application services are stateless and scale horizontally behind the Nginx load balancer.
+
+```mermaid
+graph LR
+    LB["Nginx\nLoad Balancer"]
+    LB --> wa1["web-api-1"]
+    LB --> wa2["web-api-2"]
+    LB --> aa1["assistant-api-1"]
+    LB --> aa2["assistant-api-2"]
+    LB --> ia1["integration-api-1"]
+    LB --> ea1["endpoint-api-1"]
+
+    subgraph Stateful
+        PG[("PostgreSQL\nvertical / read replicas")]
+        Redis[("Redis\ncluster mode")]
+        OS[("OpenSearch\nhorizontal sharding")]
+    end
+
+    wa1 & wa2 & aa1 & aa2 & ia1 & ea1 --> PG
+    wa1 & wa2 & aa1 & aa2 --> Redis
+    aa1 & aa2 --> OS
+```
+
+| Layer           | Scaling Strategy                          |
+| --------------- | ----------------------------------------- |
+| Application     | Horizontal (stateless pods/containers)    |
+| PostgreSQL      | Vertical + read replicas                  |
+| Redis           | Vertical or cluster mode                  |
+| OpenSearch      | Horizontal (node count + shard count)     |
+
+---
+
+## Next Steps
+
+- [Installation](/opensource/installation) — Deploy locally with Docker Compose
+- [Configuration](/opensource/configuration) — Environment variable reference
+- [Services Overview](/opensource/services) — Per-service documentation

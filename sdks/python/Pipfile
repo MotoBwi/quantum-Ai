@@ -1,0 +1,34 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "3.12.13"
+grpc-interceptor = "0.15.4"
+grpcio = "1.72.1"
+grpcio-tools = "1.72.1"
+protobuf = "6.31.1"
+types-protobuf = "6.30.2.20250516"
+pydantic = "*"
+pillow = "*"
+invoke = "*"
+
+[dev-packages]
+pylint = "2.13.9"
+pytest = "7.1.2"
+pytest-cov = "3.0.0"
+pytest-asyncio = "0.18.3"
+invoke = "1.7.1"
+pre-commit = "3.6.0"
+towncrier = "21.9.0"
+mypy = "0.961"
+
+[requires]
+python_version = "*"
+
+[scripts]
+lint = "invoke lint"
+test = "invoke test"
+analyze = "invoke analyze"
+package = "invoke package"

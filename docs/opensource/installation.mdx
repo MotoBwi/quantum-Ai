@@ -1,0 +1,779 @@
+---
+title: "Installation"
+description: "Get Rapida up and running - Choose your setup method"
+sidebarTitle: "Installation"
+---
+
+## Choose deployment mode
+
+Select one mode before running commands:
+
+### Voice Only (Recommended)
+
+- Use this for voice assistants that call LLM providers directly.
+- Services started: `ui`, `nginx`, `web-api`, `assistant-api`, `integration-api`, `endpoint-api`, `postgres`, `redis`
+- Minimum RAM: 4 GB
+- Start command (builds and starts): `make up-all`
+- Optional pre-build command: `make build-all`
+
+```bash
+make up-all
+```
+
+### Voice + Knowledge Base
+
+- Use this if assistants need document retrieval (RAG).
+- Adds: `document-api` and `opensearch`
+- Minimum RAM: 8 to 16 GB
+- Start command (builds and starts): `make up-all-with-knowledge`
+- Optional pre-build command: `make build-all-with-knowledge`
+
+```bash
+make up-all-with-knowledge
+```
+
+You can start with Voice Only and switch later by running `make up-all-with-knowledge`. Existing PostgreSQL and Redis data is not changed.
+
+---
+
+<Tabs>
+  <Tab title="Docker (Recommended)">
+
+    The fastest way to get Rapida running with all services configured automatically.
+
+    ### Prerequisites
+
+    - [Docker Desktop](https://www.docker.com/products/docker-desktop) or Docker Engine (v20.10+)
+    - Docker Compose (v2.0+) - included with Docker Desktop
+    - 4GB+ RAM available
+    - 10GB free disk space
+
+    **Apple Silicon (M1/M2/M3/M4):** Rapida base images are built for `linux/amd64`. The `Makefile` sets `DOCKER_DEFAULT_PLATFORM=linux/amd64` automatically for all `make` commands. Use `make` commands instead of running `docker compose build` directly.
+
+    ### Installation Steps
+
+<Steps>
+<Step title="Install Docker and Docker Compose">
+
+    <CodeGroup>
+      ```bash macOS
+      # Using Homebrew
+      brew install --cask docker
+
+      # Or download from Docker website
+      # https://www.docker.com/products/docker-desktop
+
+      # Then open Docker.app from Applications folder.
+      ```
+
+      ```bash Linux (Ubuntu/Debian)
+      # Install Docker
+      curl -fsSL https://get.docker.com -o get-docker.sh
+      sudo sh get-docker.sh
+
+      # Install Docker Compose
+      sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
+
+      # Add your user to docker group (avoid sudo)
+      sudo usermod -aG docker $USER
+      newgrp docker
+      ```
+
+      ```bash Windows (WSL2)
+      # Using Windows Package Manager
+      winget install Docker.DockerDesktop
+
+      # Or download from Docker website
+      # https://www.docker.com/products/docker-desktop
+
+      # Ensure WSL2 is enabled in Docker Desktop settings.
+      ```
+    </CodeGroup>
+    </Step>
+
+    <Step title="Verify Installation">
+
+    ```bash
+    # Check Docker
+    docker --version
+    # Expected: Docker version 20.10+
+
+    # Check Docker Compose
+    docker compose version
+    # Expected: version 2.0+
+
+    # Test Docker
+    docker run hello-world
+    ```
+
+</Step>
+    <Step title="Clone Repository">
+
+    ```bash
+    git clone https://github.com/rapidaai/voice-ai.git
+    cd voice-ai
+    ```
+
+</Step>
+    <Step title="Run Setup">
+
+    ```bash
+    # Create data directories and set permissions
+    make setup-local
+    ```
+
+    This creates:
+    - `~/rapida-data/assets/db` - PostgreSQL
+    - `~/rapida-data/assets/redis` - Redis
+    - `~/rapida-data/assets/opensearch` - OpenSearch (only used with the knowledge base profile)
+
+</Step>
+    <Step title="Run preflight checks (recommended)">
+
+    ```bash
+    make doctor
+    ```
+
+    This validates Docker daemon access, Docker Compose availability, memory/disk constraints, and common local port conflicts.
+
+</Step>
+    <Step title="Start Rapida">
+
+    <Tabs>
+      <Tab title="Voice Only (recommended)">
+        Starts all core services: web-api, assistant-api, integration-api, endpoint-api, UI, PostgreSQL, Redis, and Nginx.
+        `document-api` and `opensearch` are **not started**.
+        This command also builds required images in low-memory mode.
+
+        ```bash
+        make up-all
+        ```
+      </Tab>
+      <Tab title="With Knowledge Base">
+        Starts everything above **plus** `document-api` and `opensearch`.
+        Use this if you want to upload documents and use RAG / vector search in your assistants.
+        This command also builds required images in low-memory mode.
+
+        ```bash
+        make up-all-with-knowledge
+        ```
+      </Tab>
+    </Tabs>
+
+</Step>
+    <Step title="Optional: pre-build images separately">
+
+    If you want to pre-build before startup or use CI cache warming:
+
+    <Tabs>
+      <Tab title="Voice Only (recommended)">
+        Builds all core services. Does **not** include `document-api` or `opensearch`.
+
+        ```bash
+        make build-all
+        ```
+      </Tab>
+      <Tab title="With Knowledge Base">
+        Builds everything, including `document-api` (Python image) and pulls the OpenSearch image.
+        Requires **8–16 GB RAM** due to OpenSearch.
+
+        ```bash
+        make build-all-with-knowledge
+        ```
+      </Tab>
+    </Tabs>
+
+    Initial build takes 5–10 minutes depending on your network speed.
+
+</Step>
+    
+     <Step title="Access Dashboard">
+
+    Open your browser:
+    - **Dashboard**: http://localhost:3000
+    - **API Gateway**: http://localhost:8080
+</Step>
+</Steps>
+
+    ### Verify Services Are Running
+
+    ```bash
+    make ps-all
+    ```
+
+    All containers should show `Up` status.
+
+    ### Enabling Knowledge Base Later
+
+    Started with Voice Only and want to add knowledge base support? No reinstall needed:
+
+    ```bash
+    # Build + start document-api and opensearch alongside existing services
+    make up-all-with-knowledge
+    ```
+
+    Your existing data (PostgreSQL, Redis) is untouched. The new services simply start alongside what's already running.
+
+    ### View Logs
+
+    ```bash
+    # All services
+    make logs-all
+
+    # Specific service
+    make logs-web
+    make logs-assistant
+    make logs-db
+    ```
+
+    ### Stop Services
+
+    ```bash
+    # Stop all services
+    make down-all
+
+    # Stop specific service
+    make down-web
+    ```
+
+    ## Using Existing Infrastructure
+
+    If you already have **PostgreSQL**, **Redis**, or **OpenSearch** running, you can skip those services.
+
+    ### Example: Use Existing PostgreSQL
+
+    Edit `docker-compose.yml` and comment out or remove the `postgres` service:
+
+    ```yaml
+    # postgres:
+    #   image: postgres:15
+    #   ...
+    ```
+
+    Update PostgreSQL environment variables in `docker/web-api/.web.env`:
+
+    ```env
+    POSTGRES__HOST=host.docker.internal  # Point to host machine
+    POSTGRES__PORT=5432
+    POSTGRES__DB_NAME=web_db
+    POSTGRES__AUTH__USER=your_user
+    POSTGRES__AUTH__PASSWORD=your_password
+    ```
+
+    ### Example: Use Existing Redis
+
+    Comment out Redis in `docker-compose.yml`:
+
+    ```yaml
+    # redis:
+    #   image: redis:7
+    #   ...
+    ```
+
+    Update Redis settings in service `.env` files:
+
+    ```env
+    REDIS__HOST=host.docker.internal  # Your Redis host
+    REDIS__PORT=6379
+    ```
+
+    ### Example: Use Existing OpenSearch
+
+    OpenSearch is **only required for the knowledge base**. If you don't need knowledge base features, simply run `make up-all` (without the `with-knowledge` profile) and OpenSearch is not started at all.
+
+    If you do need knowledge base support and want to use an existing OpenSearch instance, comment out the `opensearch` service in `docker-compose.knowledge.yml`:
+
+    ```yaml
+    # opensearch:
+    #   image: opensearchproject/opensearch:2.11
+    #   ...
+    ```
+
+    Then set the OpenSearch vars in `docker/assistant-api/.assistant.env`:
+
+    ```env
+    OPENSEARCH__SCHEMA=http
+    OPENSEARCH__HOST=host.docker.internal
+    OPENSEARCH__PORT=9200
+    OPENSEARCH__USER=admin
+    OPENSEARCH__PASSWORD=admin
+    ```
+
+    And run with the knowledge profile:
+
+    ```bash
+    make up-all-with-knowledge
+    ```
+
+    ## Next Steps
+
+    After installation:
+
+    1. **[Configure Services](/opensource/configuration)** - Set up API keys and integrations
+    2. **[Services Overview](/opensource/services)** - Understand what each service does
+    3. **[Troubleshooting](/opensource/troubleshooting)** - Fix common issues
+
+  </Tab>
+  <Tab title="Manual Setup">
+    For developers who prefer not to use Docker. This requires installing each component individually.
+
+    <Info>
+      Same choice applies here: **Voice Only** (PostgreSQL + Redis only) or **With Knowledge Base** (PostgreSQL + Redis + OpenSearch + Python). If you only need voice assistants, skip the OpenSearch and Python/document-api sections below.
+    </Info>
+
+    ### Prerequisites
+
+    <CodeGroup>
+      ```bash macOS
+      # Install Homebrew first (if not installed)
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      # Install required tools
+      brew install go@1.25 python@3.11 node@22 postgresql@15 redis opensearch
+
+      # Verify installations
+      go version      # go1.25+
+      python --version # python3.11+
+      node --version  # node22+
+      ```
+
+      ```bash Linux (Ubuntu/Debian)
+      # Update system
+      sudo apt-get update && sudo apt-get upgrade -y
+
+      # Install dependencies
+      sudo apt-get install -y \
+        curl git build-essential \
+        golang-1.25 \
+        python3.11 python3.11-venv python3-pip \
+        nodejs npm yarn \
+        postgresql postgresql-contrib \
+        redis-server
+
+      # Install OpenSearch (requires more setup)
+      # See https://opensearch.org/docs/latest/install/
+
+      # Verify installations
+      go version
+      python3 --version
+      node --version
+      psql --version
+      ```
+
+      ```bash Windows (WSL2)
+      # First enable WSL2 in PowerShell (run as admin)
+      wsl --install
+      wsl --set-default-version 2
+
+      # Install Ubuntu 22.04 LTS from Microsoft Store
+      # Then open Ubuntu terminal and run:
+      sudo apt-get update && sudo apt-get upgrade -y
+      sudo apt-get install -y \
+        curl git build-essential \
+        golang-1.25 \
+        python3.11 python3.11-venv python3-pip \
+        nodejs npm yarn \
+        postgresql postgresql-contrib \
+        redis-server
+      ```
+    </CodeGroup>
+
+
+    #### PostgreSQL
+
+    <CodeGroup>
+      ```bash macOS
+      # Start PostgreSQL
+      brew services start postgresql@15
+
+      # Verify it's running
+      psql --version
+      ```
+
+      ```bash Linux
+      # Start PostgreSQL
+      sudo systemctl start postgresql
+      sudo systemctl enable postgresql
+
+      # Verify it's running
+      sudo systemctl status postgresql
+      ```
+
+      ```bash Windows (WSL2)
+      # Start PostgreSQL
+      sudo systemctl start postgresql
+
+      # Verify it's running
+      sudo systemctl status postgresql
+      ```
+    </CodeGroup>
+
+    Create databases:
+
+    ```bash
+    # Connect to PostgreSQL
+    psql postgres
+
+    # Run these SQL commands:
+    CREATE USER rapida_user WITH PASSWORD 'rapida_db_password';
+    CREATE DATABASE web_db OWNER rapida_user;
+    CREATE DATABASE assistant_db OWNER rapida_user;
+    CREATE DATABASE integration_db OWNER rapida_user;
+    CREATE DATABASE endpoint_db OWNER rapida_user;
+    GRANT ALL PRIVILEGES ON DATABASE web_db TO rapida_user;
+    GRANT ALL PRIVILEGES ON DATABASE assistant_db TO rapida_user;
+    GRANT ALL PRIVILEGES ON DATABASE integration_db TO rapida_user;
+    GRANT ALL PRIVILEGES ON DATABASE endpoint_db TO rapida_user;
+    \q
+    ```
+
+    #### Redis
+
+    <CodeGroup>
+      ```bash macOS
+      # Start Redis
+      brew services start redis
+
+      # Verify it's running
+      redis-cli ping
+      # Should return: PONG
+      ```
+
+      ```bash Linux
+      # Start Redis
+      sudo systemctl start redis-server
+      sudo systemctl enable redis-server
+
+      # Verify it's running
+      redis-cli ping
+      ```
+
+      ```bash Windows (WSL2)
+      # Start Redis
+      sudo systemctl start redis-server
+
+      # Verify it's running
+      redis-cli ping
+      ```
+    </CodeGroup>
+
+    #### OpenSearch (Optional — Knowledge Base Only)
+
+    OpenSearch is only needed if you want to use knowledge base / RAG features. Skip this section if you only need voice assistant functionality.
+
+    <CodeGroup>
+      ```bash macOS
+      # Install OpenSearch (requires Java)
+      brew tap opensearch-project/opensearch
+      brew install opensearch
+
+      # Start OpenSearch
+      opensearchctl start
+
+      # Verify it's running
+      curl -s http://localhost:9200/_cluster/health | jq .
+      ```
+
+      ```bash Linux
+      # Download and install OpenSearch
+      cd /opt
+      sudo wget https://artifacts.opensearch.org/releases/core/opensearch/opensearch-2.11.0-linux-x64.tar.gz
+      sudo tar -xzf opensearch-2.11.0-linux-x64.tar.gz
+      sudo mv opensearch-2.11.0 opensearch
+
+      # Set permissions
+      sudo useradd opensearch || true
+      sudo chown -R opensearch:opensearch /opt/opensearch
+
+      # Create service file
+      sudo nano /etc/systemd/system/opensearch.service
+
+      # Add this content to opensearch.service:
+      # [Unit]
+      # Description=OpenSearch
+      # After=network.target
+      # [Service]
+      # Type=simple
+      # User=opensearch
+      # ExecStart=/opt/opensearch/bin/opensearch
+      # Restart=always
+      # [Install]
+      # WantedBy=multi-user.target
+
+      # Then start:
+      sudo systemctl daemon-reload
+      sudo systemctl start opensearch
+      sudo systemctl enable opensearch
+      ```
+
+      ```bash Windows (WSL2)
+      # Similar to Linux setup
+      cd /opt
+      sudo wget https://artifacts.opensearch.org/releases/core/opensearch/opensearch-2.11.0-linux-x64.tar.gz
+      sudo tar -xzf opensearch-2.11.0-linux-x64.tar.gz
+      sudo mv opensearch-2.11.0 opensearch
+      ```
+    </CodeGroup>
+
+    #### Clone Repository
+
+    ```bash
+    git clone https://github.com/rapidaai/voice-ai.git
+    cd voice-ai
+    ```
+
+    #### Install Assistant API Dependencies
+
+    The Assistant API requires RNNoise and Azure Speech SDK for audio processing.
+
+    <CodeGroup>
+      ```bash macOS
+      # Install RNNoise
+      brew install autoconf automake libtool pkg-config
+      git clone https://github.com/rapidaai/rnnoise.git
+      cd rnnoise
+      ./autogen.sh
+      ./configure --prefix=/usr/local
+      make -j$(sysctl -n hw.ncpu)
+      sudo make install
+      cd ..
+
+      # Install Azure Speech SDK
+      wget -O SpeechSDK-macOS.tar.gz https://aka.ms/csspeech/macosbinary
+      mkdir -p ~/opt/azure-speech-sdk
+      tar --strip 1 -xzf SpeechSDK-macOS.tar.gz -C ~/opt/azure-speech-sdk
+      rm SpeechSDK-macOS.tar.gz
+
+      # Add to shell profile (~/.zprofile or ~/.bash_profile)
+      export LD_LIBRARY_PATH="$HOME/opt/azure-speech-sdk/lib:$LD_LIBRARY_PATH"
+      export DYLD_LIBRARY_PATH="$HOME/opt/azure-speech-sdk/lib:$DYLD_LIBRARY_PATH"
+      ```
+
+      ```bash Linux (Ubuntu/Debian)
+      # Install build dependencies
+      sudo apt-get install -y autoconf automake libtool pkg-config gcc g++ make
+
+      # Install RNNoise
+      git clone https://github.com/rapidaai/rnnoise.git
+      cd rnnoise
+      ./autogen.sh
+      ./configure --prefix=/usr/local
+      make -j$(nproc)
+      sudo make install
+      cd ..
+
+      # Add library path to system
+      echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/rnnoise.conf
+      sudo ldconfig
+
+      # Install Azure Speech SDK
+      wget -O SpeechSDK-Linux.tar.gz https://aka.ms/csspeech/linuxbinary
+      sudo mkdir -p /opt/azure-speech-sdk
+      sudo tar --strip 1 -xzf SpeechSDK-Linux.tar.gz -C /opt/azure-speech-sdk
+      rm SpeechSDK-Linux.tar.gz
+
+      # Add to ~/.bashrc or ~/.bash_profile
+      export LD_LIBRARY_PATH="/opt/azure-speech-sdk/lib/x64:/usr/local/lib:$LD_LIBRARY_PATH"
+      ```
+
+      ```bash Windows (WSL2)
+      # Install build dependencies
+      sudo apt-get install -y autoconf automake libtool pkg-config gcc g++ make
+
+      # Install RNNoise
+      git clone https://github.com/rapidaai/rnnoise.git
+      cd rnnoise
+      ./autogen.sh
+      ./configure --prefix=/usr/local
+      make -j$(nproc)
+      sudo make install
+      cd ..
+
+      # Install Azure Speech SDK
+      wget -O SpeechSDK-Linux.tar.gz https://aka.ms/csspeech/linuxbinary
+      sudo mkdir -p /opt/azure-speech-sdk
+      sudo tar --strip 1 -xzf SpeechSDK-Linux.tar.gz -C /opt/azure-speech-sdk
+      rm SpeechSDK-Linux.tar.gz
+
+      # Add to ~/.bashrc
+      export LD_LIBRARY_PATH="/opt/azure-speech-sdk/lib/x64:/usr/local/lib:$LD_LIBRARY_PATH"
+      ```
+    </CodeGroup>
+
+    #### Set Up Go Services
+
+    ```bash
+    # Build all Go services
+    make build-all
+
+    # Or build individually
+    make build-web
+    make build-assistant
+    make build-integration
+    make build-endpoint
+    ```
+
+    #### Set Up Python Services (Optional — Knowledge Base Only)
+
+    The `document-api` is only needed if you want to use the knowledge base / RAG features. Skip this step if you only need voice assistant functionality.
+
+    ```bash
+    # Create Python virtual environment
+    cd api/document-api
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+    # Install dependencies
+    pip install -r requirements.txt
+
+    # Note: rn_noise is included in requirements
+    ```
+
+    #### Set Up Frontend
+
+    ```bash
+    cd ui
+
+    # Install dependencies
+    yarn install
+
+    # Build CSS
+    yarn build:css
+    ```
+
+    #### Start Services (in separate terminals)
+
+    **Required for both modes** — start these four services first:
+
+    <CodeGroup>
+      ```bash Web Api
+      go run cmd/web/web.go
+      ```
+
+      ```bash Assistant Api
+      go run cmd/assistant/assistant.go
+      ```
+
+      ```bash Endpoint Api
+      go run cmd/endpoint/endpoint.go
+      ```
+
+      ```bash Integration Api
+      go run cmd/integration/integration.go
+      ```
+
+      ```bash Web console (UI)
+      cd ui
+      yarn start:dev
+      ```
+    </CodeGroup>
+
+    **Optional — only needed for knowledge base:**
+
+    <CodeGroup>
+      ```bash Document Api (optional)
+      # Requires OpenSearch running and Python venv activated
+      cd api/document-api
+      source venv/bin/activate
+      cd ../..
+      PYTHONPATH=api/document-api uvicorn app.main:app --host 0.0.0.0 --port 9010
+      ```
+
+      ```bash Celery Worker (optional)
+      # Background worker for document processing jobs
+      cd api/document-api && source venv/bin/activate && cd ../..
+      PYTHONPATH=api/document-api celery -A app.worker worker --loglevel=info
+      ```
+    </CodeGroup>
+
+    ### Step 7: Access Dashboard
+
+    Open your browser:
+    - **Dashboard**: http://localhost:3000
+    - **API Gateway**: http://localhost:8080 (requires Nginx setup)
+
+    ### Using Existing Infrastructure
+
+    If you already have PostgreSQL, Redis, or OpenSearch installed:
+
+    #### Skip PostgreSQL Installation
+
+    Just create the databases:
+
+    ```bash
+    psql -h localhost -U your_user -d postgres
+    CREATE DATABASE web_db;
+    CREATE DATABASE assistant_db;
+    CREATE DATABASE integration_db;
+    CREATE DATABASE endpoint_db;
+    ```
+
+
+
+    #### Skip Redis Installation
+
+    Just update the Redis URL:
+
+    ```bash
+    export REDIS_URL="redis://your-redis-host:6379/0"
+    ```
+
+    #### Skip OpenSearch Installation
+
+    OpenSearch is **only required for the knowledge base**. If you don't need knowledge base features, you can skip OpenSearch entirely — just don't set `OPENSEARCH__HOST` and the assistant-api will start without knowledge base support.
+
+    If you do need knowledge base support, update the OpenSearch env vars in your assistant-api config:
+
+    ```bash
+    export OPENSEARCH__SCHEMA=http
+    export OPENSEARCH__HOST=your-opensearch-host
+    export OPENSEARCH__PORT=9200
+    ```
+
+    ## Troubleshooting
+
+    ### Services Won't Start
+
+    1. Check if ports are available:
+    ```bash
+    lsof -i :9001  # For web-api
+    lsof -i :5432  # For PostgreSQL
+    ```
+
+    2. Check PostgreSQL logs:
+    ```bash
+    # macOS
+    tail -f /usr/local/var/log/postgres.log
+
+    # Linux
+    sudo journalctl -u postgresql -f
+    ```
+
+    ### Connection Issues
+
+    1. Verify PostgreSQL is running:
+    ```bash
+    psql -h localhost -U rapida_user -d web_db -c "SELECT 1;"
+    ```
+
+    2. Verify Redis is running:
+    ```bash
+    redis-cli ping
+    ```
+
+    3. Verify OpenSearch is running:
+    ```bash
+    curl -s http://localhost:9200/_cluster/health
+    ```
+
+    ## Next Steps
+
+    After installation:
+
+    1. **[Configure Services](/opensource/configuration)** - Set up API keys and integrations
+    2. **[Services Overview](/opensource/services)** - Understand what each service does
+    3. **[Troubleshooting](/opensource/troubleshooting)** - Fix common issues
+
+  </Tab>
+</Tabs>

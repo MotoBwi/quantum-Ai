@@ -1,0 +1,137 @@
+---
+title: "Rapida Voice AI Platform"
+description: "The open-source platform for building, deploying, and operating production voice AI systems at scale."
+sidebarTitle: "The Platform"
+---
+
+Rapida is an open-source voice AI orchestration platform. It gives you a complete, production-ready stack — speech processing, LLM routing, telephony, knowledge retrieval, and observability — unified under one system so you stop assembling fragile integrations and start shipping voice AI that works.
+
+<Info>
+Rapida runs as a **fully-managed cloud service** or as a **self-hosted deployment** on your own infrastructure. Same codebase, same APIs, same SDKs — your choice of where it runs.
+</Info>
+
+## Platform architecture
+
+![Rapida Platform Architecture](/images/rapida-platform-architecture.svg)
+
+## Omnichannel by default
+
+Deploy the same assistant across every channel from a single configuration. No per-channel codebases, no duplicated logic.
+
+<CardGroup cols={2}>
+  <Card title="Phone" icon="phone" href="/voice-deployment-options/phone">
+    Inbound and outbound PSTN calls. Native SIP trunking and WebRTC with direct integrations for Twilio, Vonage, Exotel, and Asterisk.
+  </Card>
+  <Card title="Web Widget" icon="globe" href="/voice-deployment-options/web-widget">
+    Embeddable voice widget for any website. One script tag — no separate assistant configuration needed.
+  </Card>
+  <Card title="Web App" icon="monitor" href="/voice-deployment-options/web-app">
+    React SDK for full-featured voice in your own application. Stream audio over WebRTC with real-time transcripts and complete UI control.
+  </Card>
+  <Card title="WhatsApp" icon="message-circle" href="/voice-deployment-options/whatsapp">
+    Conversational AI on WhatsApp Business via the Meta webhook API. Reach billions of users at messaging scale.
+  </Card>
+</CardGroup>
+
+<Tip>
+Change your prompt, swap a model, or update a knowledge base once — every channel picks it up instantly. No redeployments.
+</Tip>
+
+## Carrier-grade telephony
+
+Most voice AI platforms bolt telephony on as an afterthought. Rapida makes it a first-class concern.
+
+<Note>
+Rapida speaks native **SIP (RFC 3261)**, manages **WebRTC** peer connections with full ICE/STUN/TURN, and ships a built-in **AudioSocket server** for Asterisk — all in the same binary, no media gateways required.
+</Note>
+
+- **Connect any provider.** Twilio, Vonage, Exotel, Asterisk, or any SIP-compatible carrier. Switching providers never touches your assistant logic — swap at the channel layer without any code changes.
+- **Inbound and outbound at scale.** Handle thousands of simultaneous calls while running outbound dialing campaigns in parallel. Launch campaigns programmatically via SDK or REST bulk call API.
+- **Live call transfer.** Transfer active calls to a human agent mid-conversation. Rapida sends a SIP REFER in-flight with no audio gap and hands off the full conversation context to the receiving agent.
+- **Mix providers across regions.** Route calls to different telephony providers per region for optimal cost, latency, and compliance without rebuilding your assistant.
+
+## The full stack
+
+<CardGroup cols={2}>
+  <Card title="Speech Processing" icon="mic">
+    STT and TTS with VAD, noise cancellation, and sub-300ms latency. Mix providers per language or use case — Deepgram, ElevenLabs, Azure, AWS, OpenAI, and more.
+  </Card>
+  <Card title="LLM Routing & AgentKit" icon="cpu">
+    Route to any LLM — OpenAI, Anthropic, Gemini, Mistral, Bedrock. Or bring your own backend with **AgentKit**: plug any LLM server in over gRPC while Rapida manages the audio pipeline.
+  </Card>
+  <Card title="Knowledge Retrieval" icon="book-open">
+    Connect documents, wikis, and databases. Rapida handles chunking, embedding, and semantic search via OpenSearch so your assistant always has the right context at call time.
+  </Card>
+  <Card title="Tools, Connectors & Observability" icon="layers">
+    Call HTTP endpoints mid-conversation, sync data from Notion, GitHub, HubSpot, Jira, and more. Every call is logged with full transcripts, latency breakdowns, and webhook delivery.
+  </Card>
+</CardGroup>
+
+## Works with everything you use
+
+Rapida is provider-agnostic. Swap any layer without changing your assistant configuration.
+
+| Layer | Supported providers |
+|-------|---------------------|
+| **LLM** | OpenAI, Anthropic, Azure OpenAI, Google Gemini, Vertex AI, Mistral, Cohere, AWS Bedrock, HuggingFace, VoyageAI, AgentKit (custom gRPC) |
+| **STT** | Deepgram, AssemblyAI, Azure, Google, AWS Transcribe, OpenAI Whisper, Cartesia, Rev.ai, Speechmatics, Sarvam |
+| **TTS** | ElevenLabs, Deepgram, Azure, Google, AWS Polly, OpenAI, Cartesia, Resemble, Sarvam |
+| **VAD** | Silero, FireRed |
+| **Noise Cancellation** | RNNoise |
+| **End of Speech** | Silence-based, Pipecat turn detector |
+| **Telephony** | Twilio, Vonage, Exotel, Asterisk (AudioSocket + WebSocket), any SIP trunk |
+
+## From demo to enterprise scale
+
+Most teams start with a single assistant and a handful of test calls. Rapida is designed so the same codebase, the same APIs, and the same configuration that worked for your demo handles your production traffic — without re-architecting at every order of magnitude.
+
+- **Day one.** One API call, one assistant, one channel. The managed cloud handles infrastructure so you can focus on the product.
+- **Team growth.** Add knowledge bases, connect CRM tools, define endpoint tools, roll out to more channels — all from the same platform, no new services to operate.
+- **Production scale.** Rapida's Go microservices scale horizontally and independently. Each service — voice orchestration, LLM routing, endpoint invocation, document processing — runs as a stateless unit behind a load balancer. Redis handles distributed state and pub/sub. OpenSearch scales knowledge retrieval across millions of documents.
+- **Enterprise deployment.** Private VPC, dedicated infrastructure, custom SLAs, and full data residency. Move from managed cloud to self-hosted without changing a line of your application code.
+
+<Note>
+Rapida has no arbitrary call concurrency limits built into the platform. Throughput scales with infrastructure — horizontal pod autoscaling, Redis cluster, and OpenSearch node expansion are all first-class deployment patterns.
+</Note>
+
+## Built for enterprise — technical and legal
+
+Enterprise adoption of voice AI faces two distinct scrutiny layers: the engineering team evaluates correctness, latency, and operability; legal and compliance teams evaluate data handling, sovereignty, and auditability. Rapida is built to satisfy both.
+
+<CardGroup cols={2}>
+  <Card title="Data Sovereignty" icon="lock">
+    Self-hosted deployments run entirely on your infrastructure. No audio, no transcripts, no customer data transits Rapida's servers. Deploy in any region — your data stays where regulations require it.
+  </Card>
+  <Card title="Open Source Auditability" icon="code">
+    The full platform is open source. Legal and security teams can audit every component that handles customer data — the audio pipeline, LLM routing layer, credential vault, and logging system — without relying on vendor assurances.
+  </Card>
+  <Card title="Compliance-aligned deployment" icon="shield">
+    Self-hosted deployments on HIPAA-compliant or GDPR-scoped infrastructure with your own BAAs and DPAs. Audit logs for every call, tool invocation, and API access. Configurable data retention and PII redaction at the transcript level.
+  </Card>
+  <Card title="Governance & Access Control" icon="users">
+    Organization → Project RBAC hierarchy. Scoped roles (Super Admin, Admin, Writer, Reader) across all resources. A credential vault stores all API keys and OAuth tokens encrypted at rest — no secrets in environment variables or config files.
+  </Card>
+  <Card title="No Vendor Lock-in" icon="git-branch">
+    Open source with no proprietary formats. Swap LLMs, STT, TTS, or telephony providers at the configuration layer. If Rapida ever stops fitting your needs, your assistant logic, knowledge bases, and integration configs are all yours to take.
+  </Card>
+  <Card title="Scalable, Observable Architecture" icon="activity">
+    Every call emits structured logs, latency spans, and token usage metrics. Webhooks deliver post-call events to your data warehouse or alerting system. Full integration with standard observability stacks.
+  </Card>
+</CardGroup>
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/api-reference/installation">
+    Install the SDK and trigger your first voice call. Supports Python, Node.js, Go, and React.
+  </Card>
+  <Card title="Create an Assistant" icon="terminal" href="/assistants/create-assistant">
+    Configure an assistant with an LLM, voice, knowledge base, and deployment channels.
+  </Card>
+  <Card title="Connect Telephony" icon="phone" href="/voice-deployment-options/phone">
+    Go live with inbound and outbound calling via your telephony provider.
+  </Card>
+  <Card title="Self-host" icon="server" href="/opensource/overview">
+    Run the full open-source platform on your own infrastructure.
+  </Card>
+</CardGroup>
