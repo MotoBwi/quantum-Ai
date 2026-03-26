@@ -221,7 +221,7 @@ BenchmarkResample-8    1711   632416 ns/op   145234 B/op   4 allocs/op
 
 | Library/Implementation | ns/op (100k samples) | Quality   | Notes                |
 | ---------------------- | -------------------- | --------- | -------------------- |
-| **Rapida Resampler**   | ~632,000             | High      | Linear interpolation |
+| **Quantum AI Resampler**   | ~632,000             | High      | Linear interpolation |
 | libsamplerate          | ~580,000             | Very High | Sinc interpolation   |
 | FFmpeg swresample      | ~520,000             | High      | Multiple algorithms  |
 | Go stdlib (basic)      | ~450,000             | Low       | Nearest neighbor     |

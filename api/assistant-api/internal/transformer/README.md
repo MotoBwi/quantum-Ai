@@ -37,7 +37,7 @@ The package uses a factory pattern to instantiate transformers:
 
 ```go
 import (
-    transformer "github.com/rapidaai/api/assistant-api/internal/transformer"
+    transformer "github.com/Quantum AIai/api/assistant-api/internal/transformer"
 )
 
 // Get STT transformer
@@ -134,8 +134,8 @@ transformer/
 package internal_transformer_myprovider
 
 import (
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type myProviderOption struct {
@@ -194,9 +194,9 @@ import (
     "fmt"
     "sync"
 
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type myProviderSpeechToText struct {
@@ -392,9 +392,9 @@ import (
     "fmt"
     "sync"
 
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type myProviderTextToSpeech struct {
@@ -646,8 +646,8 @@ m.mu.Unlock()
 ```go
 import (
     "context"
-    transformer "github.com/rapidaai/api/assistant-api/internal/transformer"
-    "github.com/rapidaai/pkg/commons"
+    transformer "github.com/Quantum AIai/api/assistant-api/internal/transformer"
+    "github.com/Quantum AIai/pkg/commons"
 )
 
 func main() {
@@ -708,9 +708,9 @@ import (
     "context"
     "testing"
 
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
 )

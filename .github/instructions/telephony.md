@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers how to add a new telephony provider to the Rapida platform. Telephony enables voice agents to make and receive phone calls through providers like Twilio, Vonage, Exotel, Asterisk, and native SIP.
+This guide covers how to add a new telephony provider to the Quantum AI platform. Telephony enables voice agents to make and receive phone calls through providers like Twilio, Vonage, Exotel, Asterisk, and native SIP.
 
 ## Architecture
 
@@ -74,7 +74,7 @@ ui/src/
 
 The phone deployment page collects:
 - **Telephony provider** — dropdown filtered by `featureList.includes('telephony')`
-- **Vault credential** — `rapida.credential_id` links to stored provider secrets
+- **Vault credential** — `Quantum AI.credential_id` links to stored provider secrets
 - **Provider-specific params** — phone number, caller ID, etc.
 - **Experience config** — greeting, error message, idle timeout (30s default), max session (300s default)
 - **Audio input** (STT provider) and **output** (TTS provider)
@@ -223,8 +223,8 @@ export default function ConfigureNewproviderTelephony({ parameters, onChangePara
     return (
         <>
             <CredentialDropdown
-                value={parameters?.['rapida.credential_id']}
-                onChange={(val) => onChangeParameter('rapida.credential_id', val)}
+                value={parameters?.['Quantum AI.credential_id']}
+                onChange={(val) => onChangeParameter('Quantum AI.credential_id', val)}
                 provider="newprovider"
             />
             <Input
@@ -253,7 +253,7 @@ In `api/assistant-api/api/talk/inbound_call.go`, add routes for the new provider
 In `api/assistant-api/internal/channel/telephony/internal/`, create a new streamer that:
 1. Implements the `Streamer` interface (`Send()`, `Recv()`, `Close()`)
 2. Handles the provider's media transport (WebSocket, TCP, etc.)
-3. Converts between the provider's audio format and Rapida's internal PCM format
+3. Converts between the provider's audio format and Quantum AI's internal PCM format
 
 ### Step 6: Backend — Register in Telephony Factory
 

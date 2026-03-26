@@ -9,18 +9,18 @@ The `VoiceAgent` library provides a set of components, hooks, and utilities for 
 To install the package, run:
 
 ```sh
-npm install rapida-react@latest
+npm install Quantum AI-react@latest
 ```
 
 or using Yarn:
 
 ```sh
-yarn add rapida-react@latest
+yarn add Quantum AI-react@latest
 ```
 
 ## Usage
 
-Import the necessary components and hooks from `rapida-react@latest`:
+Import the necessary components and hooks from `Quantum AI-react@latest`:
 
 ```tsx
 import {
@@ -29,7 +29,7 @@ import {
   MediaDeviceFailure,
   ConnectionConfig,
   AgentConfig,
-} from "rapida-react";
+} from "Quantum AI-react";
 
 import {
   BrandIcon,
@@ -46,7 +46,7 @@ import {
   useMultiband3DSpeakerTrackVolume,
   useMultibandMicrophoneTrackVolume,
   useSelectInputDeviceAgent,
-} from "rapida-react";
+} from "Quantum AI-react";
 ```
 
 ## Example

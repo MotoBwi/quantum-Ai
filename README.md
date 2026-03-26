@@ -1,35 +1,35 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rapidaai/voice-ai/main/.github/banner-02.jpg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rapidaai/voice-ai/main/.github/banner-02.jpg">
-  <img style="width:100%;" src="https://raw.githubusercontent.com/rapidaai/voice-ai/main/.github/banner-02.jpg" alt="Banner">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Quantum AIai/voice-ai/main/.github/banner-02.jpg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Quantum AIai/voice-ai/main/.github/banner-02.jpg">
+  <img style="width:100%;" src="https://raw.githubusercontent.com/Quantum AIai/voice-ai/main/.github/banner-02.jpg" alt="Banner">
 </picture>
 
-# Rapida: End-to-End Voice Orchestration Platform
+# Quantum AI: End-to-End Voice Orchestration Platform
 
-[Rapida](https://rapida.ai) is an open-source platform for designing, building, and deploying voice agents at scale.  
+[Quantum AI](https://Quantum AI.ai) is an open-source platform for designing, building, and deploying voice agents at scale.  
 It’s built around three core principles:
 
 - **Reliable** — designed for production workloads, real-time audio, and fault-tolerant execution
 - **Observable** — deep visibility into calls, latency, metrics, and tool usage
 - **Customizable** — flexible architecture that adapts to any LLM, workflow, or enterprise stack
 
-Rapida provides both a **platform** and a **framework** for building real-world voice agents—from low-latency audio streaming to orchestration, monitoring, and integrations.
+Quantum AI provides both a **platform** and a **framework** for building real-world voice agents—from low-latency audio streaming to orchestration, monitoring, and integrations.
 
-Rapida is written in **Go**, using the highly optimized [gRPC](https://github.com/grpc/grpc-go) protocol for fast, efficient, bidirectional communication.
+Quantum AI is written in **Go**, using the highly optimized [gRPC](https://github.com/grpc/grpc-go) protocol for fast, efficient, bidirectional communication.
 
-[![GitHub stars](https://img.shields.io/github/stars/rapidaai/voice-ai?style=social&label=Star&maxAge=2592000)](https://github.com/rapidaai/voice-ai/stargazers/)
-[![Twitter Follow](https://img.shields.io/twitter/follow/rapidaai)](https://twitter.com/rapidaai)
+[![GitHub stars](https://img.shields.io/github/stars/Quantum AIai/voice-ai?style=social&label=Star&maxAge=2592000)](https://github.com/Quantum AIai/voice-ai/stargazers/)
+[![Twitter Follow](https://img.shields.io/twitter/follow/Quantum AIai)](https://twitter.com/Quantum AIai)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Us-5865F2?logo=discord&logoColor=white)](https://discord.gg/qKNzjBkh)
 [![Book a Meeting](https://img.shields.io/badge/Book%20a%20Meeting-Cal.com-blue)](https://cal.com/prashant-srivastav-u8duzh/30min)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/rapidaai/voice-ai)
-[![CodeQL](https://github.com/rapidaai/voice-ai/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/rapidaai/voice-ai/actions/workflows/github-code-scanning/codeql)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rapidaai/voice-ai)](https://github.com/rapidaai/voice-ai/releases/latest)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Quantum AIai/voice-ai)
+[![CodeQL](https://github.com/Quantum AIai/voice-ai/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Quantum AIai/voice-ai/actions/workflows/github-code-scanning/codeql)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Quantum AIai/voice-ai)](https://github.com/Quantum AIai/voice-ai/releases/latest)
 
 ---
 
 ## Architecture
 
-![Rapida Platform Architecture](.github/rapida-platform-architecture.svg)
+![Quantum AI Platform Architecture](.github/Quantum AI-platform-architecture.svg)
 
 ---
 
@@ -58,7 +58,7 @@ Rapida is written in **Go**, using the highly optimized [gRPC](https://github.co
 
 ## Documentation & Guides
 
-https://doc.rapida.ai
+https://doc.Quantum AI.ai
 
 ## Prerequisites
 
@@ -73,7 +73,7 @@ Get all services running in 4 commands:
 
 ```bash
 # Clone repo
-git clone https://github.com/rapidaai/voice-ai.git && cd voice-ai
+git clone https://github.com/Quantum AIai/voice-ai.git && cd voice-ai
 
 # Setup & build
 make setup-local && make build-all
@@ -207,7 +207,7 @@ docker compose ps  # Verify status
 
 ```bash
 # Test connection
-docker compose exec postgres psql -U rapida -d web_db -c "SELECT 1"
+docker compose exec postgres psql -U Quantum AI -d web_db -c "SELECT 1"
 
 # Reset everything
 make clean
@@ -252,8 +252,8 @@ Client SDKs enable your frontend to include interactive, multi-user experiences.
 
 | Language           | Repo                                                     | Docs                                                     |
 | :----------------- | :------------------------------------------------------- | :------------------------------------------------------- |
-| Web (React)        | [rapida-react](https://github.com/rapidaai/rapida-react) | [docs](https://doc.rapida.ai/api-reference/installation) |
-| Web Widget (react) | [react-widget](https://github.com/rapidaai/react-widget) |                                                          |
+| Web (React)        | [Quantum AI-react](https://github.com/Quantum AIai/Quantum AI-react) | [docs](https://doc.Quantum AI.ai/api-reference/installation) |
+| Web Widget (react) | [react-widget](https://github.com/Quantum AIai/react-widget) |                                                          |
 
 ### Server SDKs
 
@@ -261,23 +261,23 @@ Server SDKs enable your backend to build and manage agents.
 
 | Language | Repo                                                       | Docs                                                      |
 | :------- | :--------------------------------------------------------- | :-------------------------------------------------------- |
-| Go       | [rapida-go](https://github.com/rapidaai/rapida-go)         | [docs](https://doc.rapida.ai/api-reference/installation)  |
-| Python   | [rapida-python](https://github.com/rapidaai/rapida-python) | [docs](https://doc.rapida.ai/api-reference/installation/) |
+| Go       | [Quantum AI-go](https://github.com/Quantum AIai/Quantum AI-go)         | [docs](https://doc.Quantum AI.ai/api-reference/installation)  |
+| Python   | [Quantum AI-python](https://github.com/Quantum AIai/Quantum AI-python) | [docs](https://doc.Quantum AI.ai/api-reference/installation/) |
 
 ## Contributing
 
-For those who'd like to contribute code, see our [Contribution Guide](https://github.com/rapidaai/voice-ai/blob/main/CONTRIBUTING.md).
-At the same time, please consider supporting RapidaAi by sharing it on social media and at events and conferences.
+For those who'd like to contribute code, see our [Contribution Guide](https://github.com/Quantum AIai/voice-ai/blob/main/CONTRIBUTING.md).
+At the same time, please consider supporting Quantum AIAi by sharing it on social media and at events and conferences.
 
 ## Security disclosure
 
-To protect your privacy, please avoid posting security issues on GitHub. Instead, report issues to contact@rapida.ai, and our team will respond with detailed answer.
+To protect your privacy, please avoid posting security issues on GitHub. Instead, report issues to contact@Quantum AI.ai, and our team will respond with detailed answer.
 
 ## License
 
-Rapida is open-source under the GPL-2.0 license, with additional conditions:
+Quantum AI is open-source under the GPL-2.0 license, with additional conditions:
 
-- Open-source users must keep the Rapida logo visible in UI components.
+- Open-source users must keep the Quantum AI logo visible in UI components.
 - Future license terms may change; this does not affect released versions.
 
 A commercial license is available for enterprise use, which allows:
@@ -285,4 +285,4 @@ A commercial license is available for enterprise use, which allows:
 - Removal of branding
 - Closed-source usage
 - Private modifications
-  Contact sales@rapida.ai for details.
+  Contact sales@Quantum AI.ai for details.

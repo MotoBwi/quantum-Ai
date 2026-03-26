@@ -1,56 +1,56 @@
-# Rapida License
+# Quantum AI License
 
-Rapida is licensed under a modified version of the GNU General Public License v2.0 (GPL-2.0), with the following additional conditions:
+Quantum AI is licensed under a modified version of the GNU General Public License v2.0 (GPL-2.0), with the following additional conditions:
 
 ---
 
 ## RAPIDA ADDITIONAL TERMS
 
-These additional terms apply to all use of Rapida under the GPL-2.0 license.
+These additional terms apply to all use of Quantum AI under the GPL-2.0 license.
 
 ### 1. Branding Requirement
-If you are using Rapida under this open-source GPL license, you must keep the Rapida name and logo visible in all UI components provided by the software. You may not remove, obscure, or modify Rapida branding in these components.
+If you are using Quantum AI under this open-source GPL license, you must keep the Quantum AI name and logo visible in all UI components provided by the software. You may not remove, obscure, or modify Quantum AI branding in these components.
 
-**Frontend Definition:** The "frontend" includes all components located in the `ui/` directory when running Rapida from source, or the "ui" image/container when running Rapida with Docker.
+**Frontend Definition:** The "frontend" includes all components located in the `ui/` directory when running Quantum AI from source, or the "ui" image/container when running Quantum AI with Docker.
 
 ### 2. Commercial License Exception
-A separate commercial license is available that removes the branding requirement and allows the use of Rapida in closed-source or proprietary products without GPL obligations.
+A separate commercial license is available that removes the branding requirement and allows the use of Quantum AI in closed-source or proprietary products without GPL obligations.
 
 To obtain a commercial license, contact:  
-**Email:** sales@rapida.ai  
-**Website:** [https://rapida.ai](https://rapida.ai)
+**Email:** sales@Quantum AI.ai  
+**Website:** [https://Quantum AI.ai](https://Quantum AI.ai)
 
 ### 3. SaaS-Only Features
-Certain features of Rapida are provided exclusively as part of Rapida’s SaaS offering. These features are **not included in the open-source version** and cannot be replicated, sold, or offered as a service without a commercial agreement with RapidaAI.
+Certain features of Quantum AI are provided exclusively as part of Quantum AI’s SaaS offering. These features are **not included in the open-source version** and cannot be replicated, sold, or offered as a service without a commercial agreement with Quantum AIAI.
 
 ### 4. Contributors
-By contributing to Rapida, you agree that:
+By contributing to Quantum AI, you agree that:
 
-- RapidaAI may adjust the open-source licensing terms in future versions, either to relax or tighten restrictions.
+- Quantum AIAI may adjust the open-source licensing terms in future versions, either to relax or tighten restrictions.
 - Your contributed code may be used for commercial purposes, including cloud or enterprise offerings.
 
 ### 5. License Change Notice
-RapidaAI reserves the right to change or update licensing terms for future releases. This does not affect versions already released under the GPL-2.0 license.
+Quantum AIAI reserves the right to change or update licensing terms for future releases. This does not affect versions already released under the GPL-2.0 license.
 
 ---
 
 ## COMMERCIAL LICENSE OPTION (Summary)
 
-RapidaAI provides an optional commercial license that grants:
+Quantum AIAI provides an optional commercial license that grants:
 
-- Right to remove or modify Rapida branding in UI components  
-- Right to use Rapida in closed-source or proprietary software  
+- Right to remove or modify Quantum AI branding in UI components  
+- Right to use Quantum AI in closed-source or proprietary software  
 - Right to keep modifications private (no copyleft obligation)  
 - Access to enterprise-only modules, connectors, and enhancements  
 - Access to SaaS-only features (for commercial offerings)  
 - Priority bug fixes, patches, and SLAs  
 - Commercial support and onboarding assistance  
 
-This summary does not replace the full commercial agreement, which must be signed separately with RapidaAI.
+This summary does not replace the full commercial agreement, which must be signed separately with Quantum AIAI.
 
 To inquire about commercial licensing:  
-**Email:** sales@rapida.ai  
-**Website:** [https://rapida.ai](https://rapida.ai)
+**Email:** sales@Quantum AI.ai  
+**Website:** [https://Quantum AI.ai](https://Quantum AI.ai)
 
 ---
                     GNU GENERAL PUBLIC LICENSE
@@ -394,4 +394,4 @@ Public License instead of this License.
 
 
 ---
-© 2025 Rapida Pte. Ltd.
+© 2025 Quantum AI Pte. Ltd.

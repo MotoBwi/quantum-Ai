@@ -1,23 +1,23 @@
-# Rapida Python SDK
+# Quantum AI Python SDK
 
-[![Build and Publish Python SDK](https://github.com/rapidaai/rapida-python/actions/workflows/python-build.yml/badge.svg?branch=main)](https://github.com/rapidaai/rapida-python/actions/workflows/build.yml)
+[![Build and Publish Python SDK](https://github.com/Quantum AIai/Quantum AI-python/actions/workflows/python-build.yml/badge.svg?branch=main)](https://github.com/Quantum AIai/Quantum AI-python/actions/workflows/build.yml)
 
-The Rapida Python SDK provides a powerful interface for interacting with Rapida AI services. This SDK simplifies the process of making API calls, handling authentication, and managing responses from Rapida endpoints.
+The Quantum AI Python SDK provides a powerful interface for interacting with Quantum AI AI services. This SDK simplifies the process of making API calls, handling authentication, and managing responses from Quantum AI endpoints.
 
 ## Installation
 
-To install the Rapida Python SDK, use the following command:
+To install the Quantum AI Python SDK, use the following command:
 
 ```bash
-pip install rapida-python
+pip install Quantum AI-python
 ```
 
 ## Quick Start
 
-Here's how to get started with the Rapida Python SDK:
+Here's how to get started with the Quantum AI Python SDK:
 
 ```python
-from rapida import (
+from Quantum AI import (
     ConnectionConfig,
 )
 from pprint import pprint
@@ -33,13 +33,13 @@ connection_config = ConnectionConfig.default_connection_config(
 
 ## Authentication
 
-You can configure the Rapida SDK to authenticate using your **API Key** or **Personal Token**:
+You can configure the Quantum AI SDK to authenticate using your **API Key** or **Personal Token**:
 
 ### Authenticating with API Key
 
 ```python
 import os
-from rapida.connections import ConnectionConfig
+from Quantum AI.connections import ConnectionConfig
 connection_config = ConnectionConfig.with_sdk(
     os.environ["RAPIDA_API_KEY"]  # API Key from environment variables
 )
@@ -49,7 +49,7 @@ connection_config = ConnectionConfig.with_sdk(
 
 ```python
 import os
-from rapida.connections import ConnectionConfig
+from Quantum AI.connections import ConnectionConfig
 
 connection_config = ConnectionConfig.with_personal_token(
   os.environ["RAPIDA_AUTHORIZATION_TOKEN"],  # Authorization Token
@@ -78,11 +78,11 @@ python --version
 To upgrade or specify a version, use the following command:
 
 ```bash
-pip install --upgrade rapida-python
+pip install --upgrade Quantum AI-python
 ```
 
 ---
 
 ## Conclusion
 
-The Rapida Python SDK provides everything necessary to integrate seamlessly with Rapida AI services, offering flexible configuration and authentication options. With the examples provided, you should be able to get started quickly and make advanced API calls as needed.
+The Quantum AI Python SDK provides everything necessary to integrate seamlessly with Quantum AI AI services, offering flexible configuration and authentication options. With the examples provided, you should be able to get started quickly and make advanced API calls as needed.

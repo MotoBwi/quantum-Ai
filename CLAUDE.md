@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Rapida is an open-source, Go-based microservices platform for voice AI orchestration (module: `github.com/rapidaai`, Go 1.25). It uses gRPC for inter-service communication and Gin for REST APIs.
+Quantum AI is an open-source, Go-based microservices platform for voice AI orchestration (module: `github.com/rapidaai`, Go 1.25). It uses gRPC for inter-service communication and Gin for REST APIs.
 
 ## Commands
 

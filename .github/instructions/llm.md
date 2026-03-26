@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers how to add a new Large Language Model (LLM) provider to the Rapida platform. LLM providers are managed by the **integration-api** service and provide chat completion, embedding, and reranking capabilities.
+This guide covers how to add a new Large Language Model (LLM) provider to the Quantum AI platform. LLM providers are managed by the **integration-api** service and provide chat completion, embedding, and reranking capabilities.
 
 ## Architecture
 
@@ -273,9 +273,9 @@ package internal_newprovider_callers
 
 import (
     "errors"
-    internal_callers "github.com/rapidaai/api/integration-api/internal/caller"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_callers "github.com/Quantum AIai/api/integration-api/internal/caller"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type NewProvider struct {
@@ -317,11 +317,11 @@ package internal_newprovider_callers
 import (
     "context"
     "time"
-    internal_callers "github.com/rapidaai/api/integration-api/internal/caller"
-    internal_caller_metrics "github.com/rapidaai/api/integration-api/internal/caller/metrics"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/utils"
-    "github.com/rapidaai/protos"
+    internal_callers "github.com/Quantum AIai/api/integration-api/internal/caller"
+    internal_caller_metrics "github.com/Quantum AIai/api/integration-api/internal/caller/metrics"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/utils"
+    "github.com/Quantum AIai/protos"
 )
 
 type largeLanguageCaller struct {
@@ -396,9 +396,9 @@ package internal_newprovider_callers
 
 import (
     "context"
-    internal_callers "github.com/rapidaai/api/integration-api/internal/caller"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_callers "github.com/Quantum AIai/api/integration-api/internal/caller"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type verifyCredentialCaller struct {
@@ -443,12 +443,12 @@ package integration_api
 
 import (
     "context"
-    config "github.com/rapidaai/api/integration-api/config"
-    internal_callers "github.com/rapidaai/api/integration-api/internal/caller"
-    internal_newprovider_callers "github.com/rapidaai/api/integration-api/internal/caller/newprovider"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/connectors"
-    integration_api "github.com/rapidaai/protos"
+    config "github.com/Quantum AIai/api/integration-api/config"
+    internal_callers "github.com/Quantum AIai/api/integration-api/internal/caller"
+    internal_newprovider_callers "github.com/Quantum AIai/api/integration-api/internal/caller/newprovider"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/connectors"
+    integration_api "github.com/Quantum AIai/protos"
 )
 
 type newproviderIntegrationApi struct {
@@ -577,7 +577,7 @@ Create `ui/src/app/components/providers/text/newprovider/`:
 
 **`constants.ts`**:
 ```typescript
-import { Metadata } from '@rapidaai/react';
+import { Metadata } from '@Quantum AIai/react';
 
 export const NewProviderModels = [
     { id: 'newprovider-model-v1', name: 'Model v1' },

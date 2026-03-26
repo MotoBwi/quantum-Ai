@@ -1,6 +1,6 @@
 # Audio Resampler
 
-High-performance, thread-safe audio resampler for the Rapida Voice AI platform. Supports multiple audio formats, sample rates, and channel configurations with efficient parallel processing.
+High-performance, thread-safe audio resampler for the Quantum AI Voice AI platform. Supports multiple audio formats, sample rates, and channel configurations with efficient parallel processing.
 
 ## Features
 

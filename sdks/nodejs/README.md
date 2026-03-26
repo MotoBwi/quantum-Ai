@@ -1,15 +1,15 @@
-# Rapida Node.js SDK
+# Quantum AI Node.js SDK
 
-The official Node.js SDK for the Rapida Voice AI platform. This SDK provides comprehensive API clients for building voice-enabled applications with Rapida's microservices.
+The official Node.js SDK for the Quantum AI Voice AI platform. This SDK provides comprehensive API clients for building voice-enabled applications with Quantum AI's microservices.
 
 ## Installation
 
 ```bash
-npm install @rapidaai/nodejs
+npm install @Quantum AIai/nodejs
 # or
-yarn add @rapidaai/nodejs
+yarn add @Quantum AIai/nodejs
 # or
-pnpm add @rapidaai/nodejs
+pnpm add @Quantum AIai/nodejs
 ```
 
 ## Quick Start
@@ -19,9 +19,9 @@ import {
   ConnectionConfig, 
   GetAssistant, 
   GetAssistantRequest 
-} from '@rapidaai/nodejs';
+} from '@Quantum AIai/nodejs';
 
-// Create a connection to Rapida services
+// Create a connection to Quantum AI services
 const config = new ConnectionConfig({
   assistantHost: 'localhost:9007',
   integrationHost: 'localhost:9004',
@@ -39,7 +39,7 @@ console.log(response);
 
 ## Available Clients
 
-The SDK provides clients for the following Rapida services:
+The SDK provides clients for the following Quantum AI services:
 
 ### Core Services
 
@@ -92,7 +92,7 @@ import {
   CreateAssistantRequest,
   CreateAssistant,
   ConnectionConfig,
-} from '@rapidaai/nodejs';
+} from '@Quantum AIai/nodejs';
 
 const config = new ConnectionConfig({
   assistantHost: 'localhost:9007',
@@ -114,7 +114,7 @@ import {
   GetAllKnowledgeRequest,
   GetAllKnowledge,
   ConnectionConfig,
-} from '@rapidaai/nodejs';
+} from '@Quantum AIai/nodejs';
 
 const config = new ConnectionConfig({
   documentHost: 'localhost:9010',
@@ -197,5 +197,5 @@ MIT
 ## Support
 
 For issues, feature requests, or questions:
-- GitHub Issues: [rapida-nodejs](https://github.com/rapidaai/rapida-nodejs/issues)
-- Rapida Docs: https://docs.rapida.ai/
+- GitHub Issues: [Quantum AI-nodejs](https://github.com/Quantum AIai/Quantum AI-nodejs/issues)
+- Quantum AI Docs: https://docs.Quantum AI.ai/

@@ -1,11 +1,11 @@
 # CONTRIBUTING
 
-So you're looking to contribute to **Rapida** that’s awesome.  
+So you're looking to contribute to **Quantum AI** that’s awesome.  
 We’re building an open, reliable, end-to-end voice orchestration stack, and community contributions matter a lot. As a young project with a big vision, every bit of help truly counts.
 
 We want to keep development fast and nimble, while also giving contributors a smooth path into the codebase. This contribution guide is meant to help you understand how we work, what to expect, and how to get started quickly.
 
-Just like Rapida itself, this guide is a **work in progress**. Some sections may lag behind development, and we will continue improving the contributor documentation as the project grows.
+Just like Quantum AI itself, this guide is a **work in progress**. Some sections may lag behind development, and we will continue improving the contributor documentation as the project grows.
 
 ---
 
@@ -88,7 +88,7 @@ Please include:
 
 ---
 
-## Setting Up Rapida
+## Setting Up Quantum AI
 
 Full setup guides will be added soon for:
 

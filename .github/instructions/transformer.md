@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers how to add a new Speech-to-Text (STT) or Text-to-Speech (TTS) provider to the Rapida platform. Transformers convert between audio and text — STT transcribes user speech, TTS synthesizes agent responses.
+This guide covers how to add a new Speech-to-Text (STT) or Text-to-Speech (TTS) provider to the Quantum AI platform. Transformers convert between audio and text — STT transcribes user speech, TTS synthesizes agent responses.
 
 ## Architecture
 
@@ -194,9 +194,9 @@ package internal_transformer_newprovider
 
 import (
     "fmt"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/utils"
-    "github.com/rapidaai/protos"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/utils"
+    "github.com/Quantum AIai/protos"
 )
 
 type newproviderOption struct {
@@ -249,10 +249,10 @@ package internal_transformer_newprovider
 import (
     "context"
     "sync"
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/utils"
-    "github.com/rapidaai/protos"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/utils"
+    "github.com/Quantum AIai/protos"
 )
 
 type newproviderSTT struct {
@@ -316,10 +316,10 @@ package internal_transformer_newprovider
 import (
     "context"
     "sync"
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/utils"
-    "github.com/rapidaai/protos"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/utils"
+    "github.com/Quantum AIai/protos"
 )
 
 type newproviderTTS struct {
@@ -382,7 +382,7 @@ In `api/assistant-api/internal/transformer/transformer.go`:
 
 1. **Add import**:
 ```go
-internal_transformer_newprovider "github.com/rapidaai/api/assistant-api/internal/transformer/newprovider"
+internal_transformer_newprovider "github.com/Quantum AIai/api/assistant-api/internal/transformer/newprovider"
 ```
 
 2. **Add constant**:
@@ -478,7 +478,7 @@ Create `ui/src/app/components/providers/speech-to-text/newprovider/`:
 
 **`constant.ts`**:
 ```typescript
-import { Metadata } from '@rapidaai/react';
+import { Metadata } from '@Quantum AIai/react';
 
 export const GetNewproviderDefaultOptions = (parameters: Metadata[]): Metadata[] => {
     const defaults = [

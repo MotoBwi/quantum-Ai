@@ -1,13 +1,13 @@
 # Security Policy
 
-Rapida takes security seriously.  
-We design Rapida as a production-grade Voice AI orchestration platform, often deployed in private cloud or customer-controlled environments. Responsible disclosure helps us keep the platform safe for everyone.
+Quantum AI takes security seriously.  
+We design Quantum AI as a production-grade Voice AI orchestration platform, often deployed in private cloud or customer-controlled environments. Responsible disclosure helps us keep the platform safe for everyone.
 
 ---
 
 ## Supported Versions
 
-Security updates are applied to the latest released versions of Rapida.
+Security updates are applied to the latest released versions of Quantum AI.
 
 | Version | Supported |
 |--------|-----------|
@@ -20,11 +20,11 @@ If you are running an older version, we strongly recommend upgrading to the late
 
 ## Reporting a Vulnerability
 
-If you believe you have found a security vulnerability in Rapida, **please do not open a public GitHub issue**.
+If you believe you have found a security vulnerability in Quantum AI, **please do not open a public GitHub issue**.
 
 Instead, report it privately using one of the following methods:
 
-- **Email:** `prashant@rapida.ai`
+- **Email:** `prashant@Quantum AI.ai`
 - **Subject:** `Security Vulnerability Report`
 
 Please include:
@@ -55,32 +55,32 @@ We aim to resolve critical issues as quickly as possible.
 ## Security Scope
 
 This policy covers:
-- Rapida core orchestration services
+- Quantum AI core orchestration services
 - APIs, SDKs, and control plane
 - Voice streaming, agent execution, and orchestration logic
 - Deployment artifacts (Docker, Helm, etc.)
 
 Out of scope:
 - Misconfigurations in self-hosted deployments
-- Third-party providers (telephony, STT, LLM, TTS) unless caused by Rapida integration logic
+- Third-party providers (telephony, STT, LLM, TTS) unless caused by Quantum AI integration logic
 - Social engineering or physical attacks
 
 ---
 
 ## Deployment Responsibility
 
-Rapida is often deployed in:
+Quantum AI is often deployed in:
 - Private cloud
 - Customer VPC
 - On-prem or regulated environments
 
-Security of infrastructure, networking, IAM, secrets management, and compliance controls remains the responsibility of the deploying organization. Rapida provides secure defaults, but final security posture depends on deployment configuration.
+Security of infrastructure, networking, IAM, secrets management, and compliance controls remains the responsibility of the deploying organization. Quantum AI provides secure defaults, but final security posture depends on deployment configuration.
 
 ---
 
 ## Open Source Security
 
-Rapida is open-source by design.  
+Quantum AI is open-source by design.  
 We believe transparency improves security through review, auditing, and community collaboration.
 
 If you are interested in contributing security improvements:
@@ -92,11 +92,11 @@ If you are interested in contributing security improvements:
 ## Contact
 
 For security-related matters only:  
-📧 **prashant@rapida.ai**
+📧 **prashant@Quantum AI.ai**
 
 For general support and questions:  
-📧 **sales@rapida.ai**
+📧 **sales@Quantum AI.ai**
 
 ---
 
-Thank you for helping keep Rapida and its users secure.
+Thank you for helping keep Quantum AI and its users secure.

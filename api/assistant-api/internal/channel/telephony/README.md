@@ -21,7 +21,7 @@ The package uses a factory pattern to instantiate telephony providers:
 
 ```go
 import (
-    telephony "github.com/rapidaai/api/assistant-api/internal/telephony"
+    telephony "github.com/Quantum AIai/api/assistant-api/internal/telephony"
 )
 
 // Get telephony provider
@@ -157,13 +157,13 @@ import (
 
     "github.com/gin-gonic/gin"
     "github.com/gorilla/websocket"
-    "github.com/rapidaai/api/assistant-api/config"
-    internal_streamers "github.com/rapidaai/api/assistant-api/internal/streamers"
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/pkg/types"
-    "github.com/rapidaai/pkg/utils"
-    "github.com/rapidaai/protos"
+    "github.com/Quantum AIai/api/assistant-api/config"
+    internal_streamers "github.com/Quantum AIai/api/assistant-api/internal/streamers"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/pkg/types"
+    "github.com/Quantum AIai/pkg/utils"
+    "github.com/Quantum AIai/protos"
 )
 
 type myProviderTelephony struct {
@@ -454,9 +454,9 @@ import (
     "sync"
 
     "github.com/gorilla/websocket"
-    internal_streamers "github.com/rapidaai/api/assistant-api/internal/streamers"
-    "github.com/rapidaai/pkg/commons"
-    "github.com/rapidaai/protos"
+    internal_streamers "github.com/Quantum AIai/api/assistant-api/internal/streamers"
+    "github.com/Quantum AIai/pkg/commons"
+    "github.com/Quantum AIai/protos"
 )
 
 type myProviderWebsocketStreamer struct {
@@ -688,10 +688,10 @@ package internal_telephony_factory
 import (
     "errors"
 
-    "github.com/rapidaai/api/assistant-api/config"
-    internal_myprovider_telephony "github.com/rapidaai/api/assistant-api/internal/telephony/my-provider"
-    internal_type "github.com/rapidaai/api/assistant-api/internal/type"
-    "github.com/rapidaai/pkg/commons"
+    "github.com/Quantum AIai/api/assistant-api/config"
+    internal_myprovider_telephony "github.com/Quantum AIai/api/assistant-api/internal/telephony/my-provider"
+    internal_type "github.com/Quantum AIai/api/assistant-api/internal/type"
+    "github.com/Quantum AIai/pkg/commons"
 )
 
 type Telephony string
@@ -734,8 +734,8 @@ import (
     "context"
     "testing"
 
-    "github.com/rapidaai/api/assistant-api/config"
-    "github.com/rapidaai/pkg/commons"
+    "github.com/Quantum AIai/api/assistant-api/config"
+    "github.com/Quantum AIai/pkg/commons"
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
 )

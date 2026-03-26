@@ -1,7 +1,7 @@
 # `/api`
 
-This directory contains all API definitions, handlers used across the Rapida Voice Orchestration Platform.
-It provides a structured, reliable, and observable interface for interacting with Rapida’s core services.
+This directory contains all API definitions, handlers used across the Quantum AI Voice Orchestration Platform.
+It provides a structured, reliable, and observable interface for interacting with Quantum AI’s core services.
 
 
  assistant-api      # Manage assistants and voice behavior

@@ -1,8 +1,8 @@
-# Rapida Voice AI Platform - AI Coding Guidelines
+# Quantum AI Voice AI Platform - AI Coding Guidelines
 
 ## Architecture Overview
 
-Rapida is a Go-based microservices platform for voice AI orchestration (module: `github.com/rapidaai`, Go 1.25). It consists of 4 Go backend services, 1 Python backend service, a React/TypeScript UI, 4 client SDKs, and shared infrastructure.
+Quantum AI is a Go-based microservices platform for voice AI orchestration (module: `github.com/Quantum AIai`, Go 1.25). It consists of 4 Go backend services, 1 Python backend service, a React/TypeScript UI, 4 client SDKs, and shared infrastructure.
 
 ### Services
 
@@ -222,16 +222,16 @@ voice-ai/
 │       └── utils/                # Utility functions
 │
 ├── sdks/                         # Client SDKs (git submodules)
-│   ├── go/                       # Go SDK (rapida/clients: assistant, call, deployment, endpoint, etc.)
+│   ├── go/                       # Go SDK (Quantum AI/clients: assistant, call, deployment, endpoint, etc.)
 │   ├── nodejs/                   # Node.js SDK (TypeScript, tsup build)
-│   ├── python/                   # Python SDK (rapida/clients: assistant, call, endpoint, invoke)
+│   ├── python/                   # Python SDK (Quantum AI/clients: assistant, call, endpoint, invoke)
 │   └── react/                    # React SDK (voice-agent component, WebRTC, hooks)
 │
 ├── config/config.go              # Global AppConfig struct
 ├── docker/                       # Per-service Dockerfiles + env files
 ├── docker-compose.yml            # Full-stack orchestration
 ├── Makefile                      # Build, deploy, and dev commands
-├── go.mod                        # Go module (github.com/rapidaai)
+├── go.mod                        # Go module (github.com/Quantum AIai)
 ├── docs/                         # Mintlify documentation site
 ├── nginx/nginx.conf              # Nginx config
 ├── env/config.yaml               # Default environment config
@@ -521,7 +521,7 @@ type Communication interface {
     InternalCaller                      // Integration/Vault/Deployment clients
     Logger                              // Webhook & tool execution logging
     Auth() types.SimplePrinciple
-    Source() utils.RapidaSource         // phone/debugger/sdk/etc
+    Source() utils.Quantum AISource         // phone/debugger/sdk/etc
     Tracer() VoiceAgentTracer           // OpenTelemetry tracing
     Assistant() *Assistant
     Conversation() *AssistantConversation
@@ -590,9 +590,9 @@ async def add_datasource(request, call_next):
 
 | SDK         | Location              | Key Clients                                                                                                                     |
 | ----------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Go**      | `sdks/go/rapida/`     | assistant, call, deployment, endpoint, invoke, talk, vault                                                                      |
+| **Go**      | `sdks/go/Quantum AI/`     | assistant, call, deployment, endpoint, invoke, talk, vault                                                                      |
 | **Node.js** | `sdks/nodejs/src/`    | assistant, auth, call, connect, deployment, document, endpoint, invoke, knowledge, organization, project, provider, talk, vault |
-| **Python**  | `sdks/python/rapida/` | assistant, call, endpoint, invoke + agentkit                                                                                    |
+| **Python**  | `sdks/python/Quantum AI/` | assistant, call, endpoint, invoke + agentkit                                                                                    |
 | **React**   | `sdks/react/src/`     | voice-agent component, WebRTC/gRPC transport, device selector, audio visualization hooks                                        |
 
 ---

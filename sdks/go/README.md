@@ -1,20 +1,20 @@
-# Rapida SDK
+# Quantum AI SDK
 
-[![Build and Publish Golang SDK](https://github.com/rapidaai/rapida-go/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/rapidaai/rapida-go/actions/workflows/build.yml)
+[![Build and Publish Golang SDK](https://github.com/Quantum AIai/Quantum AI-go/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Quantum AIai/Quantum AI-go/actions/workflows/build.yml)
 
-The Rapida SDK provides a powerful interface for interacting with Rapida AI services. This SDK simplifies the process of making API calls, handling authentication, and managing responses from Rapida endpoints.
+The Quantum AI SDK provides a powerful interface for interacting with Quantum AI AI services. This SDK simplifies the process of making API calls, handling authentication, and managing responses from Quantum AI endpoints.
 
 ## Installation
 
-To install the Rapida SDK, use the following command:
+To install the Quantum AI SDK, use the following command:
 
 ```
-go get github.com/rapidaai/rapida-go@v0.0.7
+go get github.com/Quantum AIai/Quantum AI-go@v0.0.7
 ```
 
 ## Quick Start
 
-Here's how to get started with the Rapida SDK:
+Here's how to get started with the Quantum AI SDK:
 
 ```go
 package main
@@ -22,7 +22,7 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/rapidaai/rapida-go/rapida/connections"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/connections"
 )
 
 func main() {
@@ -39,14 +39,14 @@ func main() {
 
 ## Authentication
 
-You can configure the Rapida SDK to authenticate using your **API Key** or **Personal Token**:
+You can configure the Quantum AI SDK to authenticate using your **API Key** or **Personal Token**:
 
 ### Authenticating with API Key
 
 ```go
 import (
     "os"
-    "github.com/rapidaai/rapida-go/rapida/connections"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/connections"
 )
 
 connectionConfig := connections.DefaultConnectionConfig(
@@ -61,7 +61,7 @@ connectionConfig := connections.DefaultConnectionConfig(
 ```go
 import (
     "os"
-    "github.com/rapidaai/rapida-go/rapida/connections"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/connections"
 )
 
 connectionConfig := connections.DefaultConnectionConfig(
@@ -75,14 +75,14 @@ connectionConfig := connections.DefaultConnectionConfig(
 
 ## Initializing a Client
 
-Once the configuration is set, you can initialize the Rapida client. Example:
+Once the configuration is set, you can initialize the Quantum AI client. Example:
 
 ```go
 package main
 
 import (
     "context"
-    "github.com/rapidaai/rapida-go/rapida/connections"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/connections"
 )
 
 func main() {
@@ -108,9 +108,9 @@ import (
     "context"
     "fmt"
     "log"
-    "github.com/rapidaai/rapida-go/rapida"
-    "github.com/rapidaai/rapida-go/rapida/builders"
-    "github.com/rapidaai/rapida-go/rapida/definitions"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/builders"
+    "github.com/Quantum AIai/Quantum AI-go/Quantum AI/definitions"
 )
 
 func main() {
@@ -162,11 +162,11 @@ go version
 To upgrade or specify a version, use the following command:
 
 ```bash
-go get github.com/rapidaai/rapida-go@v0.0.7
+go get github.com/Quantum AIai/Quantum AI-go@v0.0.7
 ```
 
 ---
 
 ## Conclusion
 
-The Rapida SDK provides everything necessary to integrate seamlessly with Rapida AI services, offering flexible configuration and authentication options. With the examples provided, you should be able to get started quickly and make advanced API calls as needed.
+The Quantum AI SDK provides everything necessary to integrate seamlessly with Quantum AI AI services, offering flexible configuration and authentication options. With the examples provided, you should be able to get started quickly and make advanced API calls as needed.

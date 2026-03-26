@@ -174,7 +174,7 @@ Three executor types selected by `AssistantProvider` enum:
 **Local tools:**
 - `knowledge_retrieval` — RAG search against knowledge bases
 - `api_request` — HTTP calls to external APIs
-- `endpoint_request` — Invoke Rapida endpoints
+- `endpoint_request` — Invoke endpoints
 - `end_of_conversation` — Terminate conversation
 
 **MCP tools:** External MCP servers, dynamically discovered via `ListTools()`.

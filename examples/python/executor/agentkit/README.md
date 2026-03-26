@@ -1,6 +1,6 @@
 # AgentKit gRPC Server Example
 
-A Python gRPC server implementing the TalkService.AssistantTalk bidirectional streaming service for Rapida Voice AI.
+A Python gRPC server implementing the TalkService.AssistantTalk bidirectional streaming service for Quantum AI Voice AI.
 
 ## Quick Start
 
@@ -301,7 +301,7 @@ python azure-openai-gpt.py
 
 ### 5. Gemini Example (`gemini-example.py`)
 
-Google's Gemini 2.0 API with google-genai SDK integrated with Rapida gRPC for real-time voice interactions.
+Google's Gemini 2.0 API with google-genai SDK integrated with Quantum AI gRPC for real-time voice interactions.
 
 ```bash
 # Note: Use separate environment due to protobuf version constraints
@@ -328,7 +328,7 @@ python gemini-example.py
 
 **Architecture**:
 
-- Rapida gRPC TalkService implementation
+- Quantum AI gRPC TalkService implementation
 - Google Generative AI (google-genai SDK) with function calling
 - Streaming responses with tool execution
 - Graceful fallback for missing API key
@@ -356,7 +356,7 @@ python gemini-example.py
 - Uses `google-genai` (newer Google SDK)
 - Supports streaming responses and function calling
 - Better integration with latest Gemini models
-- Requires separate environment from Rapida's protobuf 6.x
+- Requires separate environment from Quantum AI's protobuf 6.x
 
 ### 6. n8n Workflow Integration (`n8n-workflow.py`)
 
@@ -469,7 +469,7 @@ python autogen-collaborative.py
 
 **Error**: `Detected mismatched Protobuf Gencode/Runtime major versions when loading common.proto: gencode 6.30.0 runtime X.X.X`
 
-**Cause**: The main environment uses `protobuf>=6.0.0` for Rapida compatibility. If you're trying to use Gemini in the same environment, `google-generativeai` will downgrade protobuf to 5.x, causing a mismatch.
+**Cause**: The main environment uses `protobuf>=6.0.0` for Quantum AI compatibility. If you're trying to use Gemini in the same environment, `google-generativeai` will downgrade protobuf to 5.x, causing a mismatch.
 
 **Solution**:
 

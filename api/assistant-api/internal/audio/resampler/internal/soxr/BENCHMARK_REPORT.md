@@ -313,7 +313,7 @@ BenchmarkResample-8 34 33,385,729 ns/op 13,111,488 B/op 299,879 allocs/op
 
 ## Recommendations
 
-### For Rapida Voice AI Platform
+### For Quantum AI Voice AI Platform
 
 **Primary Recommendation: Use Default Resampler**
 

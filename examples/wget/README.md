@@ -1,6 +1,6 @@
-# Rapida Chat Widget Examples
+# Quantum AI Chat Widget Examples
 
-Two ways to integrate the Rapida chat widget into your project:
+Two ways to integrate the Quantum AI chat widget into your project:
 
 | Method | Folder | Best for |
 |--------|--------|----------|
@@ -20,7 +20,7 @@ Drop-in integration. No build step needed.
     token: "YOUR_API_KEY",
   };
 </script>
-<script defer src="https://cdn-01.rapida.ai/public/scripts/app.min.js"></script>
+<script defer src="https://cdn-01.Quantum AI.ai/public/scripts/app.min.js"></script>
 ```
 
 ### Examples
@@ -118,6 +118,6 @@ See `sdks/react-widget/src/styles/index.css` for the full list of `--rpd-*` toke
 
 ## Getting Your Credentials
 
-1. Sign in to the [Rapida Console](https://app.rapida.ai)
+1. Sign in to the [Quantum AI Console](https://app.Quantum AI.ai)
 2. Create or open a project -> copy your **API Key**
 3. Open **Assistants** -> copy your **Assistant ID**

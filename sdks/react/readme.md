@@ -1,26 +1,26 @@
-# @rapidaai/react
+# @Quantum AIai/react
 
-The official React/TypeScript SDK for the [Rapida](https://rapida.ai) platform. Build real-time voice agents, make phone calls, manage assistants, knowledge bases, endpoints, conversations, and more — all from your React application via gRPC.
+The official React/TypeScript SDK for the [Quantum AI](https://Quantum AI.ai) platform. Build real-time voice agents, make phone calls, manage assistants, knowledge bases, endpoints, conversations, and more — all from your React application via gRPC.
 
 
 
-[![Build and Publish](https://github.com/rapidaai/rapida-react/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/rapidaai/rapida-react/actions/workflows/npm-publish.yml)
-[![Test](https://github.com/rapidaai/rapida-react/actions/workflows/test.yml/badge.svg)](https://github.com/rapidaai/rapida-react/actions/workflows/test.yml)
-[![Twitter Follow](https://img.shields.io/twitter/follow/rapidaai)](https://twitter.com/rapidaai)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rapidaai/rapida-react)](https://github.com/rapidaai/voice-ai/releases/latest)
+[![Build and Publish](https://github.com/Quantum AIai/Quantum AI-react/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Quantum AIai/Quantum AI-react/actions/workflows/npm-publish.yml)
+[![Test](https://github.com/Quantum AIai/Quantum AI-react/actions/workflows/test.yml/badge.svg)](https://github.com/Quantum AIai/Quantum AI-react/actions/workflows/test.yml)
+[![Twitter Follow](https://img.shields.io/twitter/follow/Quantum AIai)](https://twitter.com/Quantum AIai)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Quantum AIai/Quantum AI-react)](https://github.com/Quantum AIai/voice-ai/releases/latest)
 
 ---
 
 ## Installation
 
 ```sh
-npm install @rapidaai/react@latest
+npm install @Quantum AIai/react@latest
 ```
 
 or using Yarn:
 
 ```sh
-yarn add @rapidaai/react@latest
+yarn add @Quantum AIai/react@latest
 ```
 
 ### Peer Dependencies
@@ -63,7 +63,7 @@ yarn add @rapidaai/react@latest
 All SDK functions require a `ConnectionConfig` instance. Create one using an auth mode that fits your use case:
 
 ```ts
-import { ConnectionConfig } from "@rapidaai/react";
+import { ConnectionConfig } from "@Quantum AIai/react";
 
 // Public / SDK access (API key)
 const config = ConnectionConfig.DefaultConnectionConfig(
@@ -125,7 +125,7 @@ import {
   Google,
   Linkedin,
   Github,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### Authenticate a User
@@ -210,7 +210,7 @@ import {
   GetMessages,
   GetAllAssistantConversationMessage,
   GetAssistantConversation,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### List Assistants
@@ -269,7 +269,7 @@ import {
   GetAssistantPhoneDeployment,
   CreateAssistantWhatsappDeployment,
   GetAssistantWhatsappDeployment,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Create a phone deployment
 const response = await CreateAssistantPhoneDeployment(config, request, authHeader);
@@ -289,7 +289,7 @@ import {
   DeleteAssistantWebhook,
   GetAllWebhookLog,
   GetWebhookLog,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Create a webhook
 const response = await CreateWebhook(config, request, authHeader);
@@ -311,7 +311,7 @@ import {
   DeleteAssistantTool,
   GetAssistantToolLog,
   GetAllAssistantToolLog,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Create a tool
 const response = await CreateAssistantTool(config, request, authHeader);
@@ -331,7 +331,7 @@ import {
   UpdateAssistantKnowledge,
   GetAssistantKnowledge,
   DeleteAssistantKnowledge,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Link a knowledge base to an assistant
 const response = await CreateAssistantKnowledge(config, request, authHeader);
@@ -346,7 +346,7 @@ import {
   UpdateAnalysis,
   GetAssistantAnalysis,
   DeleteAssistantAnalysis,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 const response = await CreateAnalysis(config, request, authHeader);
 ```
@@ -357,7 +357,7 @@ const response = await CreateAnalysis(config, request, authHeader);
 import {
   CreateAssistantProvider,
   GetAllAssistantProvider,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 const response = await CreateAssistantProvider(config, request, authHeader);
 ```
@@ -374,7 +374,7 @@ import {
   CreateBulkPhoneCall,
   CreatePhoneCallRequest,
   CreateBulkPhoneCallRequest,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### Make a Phone Call
@@ -415,7 +415,7 @@ import {
   Channel,
   InputOptions,
   StringToAny,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 const agent = new VoiceAgent(
   ConnectionConfig.DefaultConnectionConfig(
@@ -433,7 +433,7 @@ const agent = new VoiceAgent(
     "{ASSISTANT_ID}",
     new InputOptions([Channel.Audio, Channel.Text], Channel.Text)
   )
-    .addKeywords(["Rapida"])
+    .addKeywords(["Quantum AI"])
     .addArgument("name", "John")
     .addMetadata("utm_source", StringToAny("landing_page")),
 
@@ -473,7 +473,7 @@ import {
   MessageRole,
   MessageStatus,
   Feedback,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 interface VoiceAgentProps {
   connectConfig: ConnectionConfig;
@@ -649,7 +649,7 @@ const MessagingControls: FC<{ agent: VoiceAgentCore }> = ({ agent }) => {
 #### 4. Wire It Up
 
 ```tsx
-import { ConnectionConfig, AgentConfig, Channel, InputOptions, StringToAny } from "@rapidaai/react";
+import { ConnectionConfig, AgentConfig, Channel, InputOptions, StringToAny } from "@Quantum AIai/react";
 import { VoiceAgent } from "./voice-agent";
 
 function App() {
@@ -665,7 +665,7 @@ function App() {
     new InputOptions([Channel.Audio, Channel.Text], Channel.Text)
   )
     .setUserIdentifier("user-123", "John Doe")
-    .addKeywords(["Rapida"])
+    .addKeywords(["Quantum AI"])
     .addMetadata("source", StringToAny("web"));
 
   return <VoiceAgent connectConfig={connectConfig} agentConfig={agentConfig} />;
@@ -696,7 +696,7 @@ import {
   CreateConversationMetric,
   GetAssistantConversation,
   GetAllAssistantConversationMessage,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### List Conversations
@@ -765,7 +765,7 @@ import {
   GetKnowledgeLog,
   GetAllKnowledgeLog,
   IndexKnowledgeDocument,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### Create a Knowledge Base
@@ -844,7 +844,7 @@ import {
   GetAllEndpointLog,
   GetEndpointLog,
   Invoke,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 ```
 
 ### List Endpoints
@@ -876,7 +876,7 @@ const cacheResponse = await CreateEndpointCacheConfiguration(config, request, au
 ### Invoke an Endpoint
 
 ```ts
-import { InvokeRequest } from "@rapidaai/react";
+import { InvokeRequest } from "@Quantum AIai/react";
 
 const request = new InvokeRequest();
 // ... set endpoint ID, parameters, etc.
@@ -904,7 +904,7 @@ import {
   CreateOrganization,
   UpdateOrganization,
   GetOrganization,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Create organization
 CreateOrganization(config, "Acme Corp", "50-200", "Technology", authHeader, (err, response) => {
@@ -934,7 +934,7 @@ import {
   AddUsersToProject,
   GetAllProjectCredential,
   CreateProjectCredential,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Create project
 const response = await CreateProject(config, request, authHeader);
@@ -968,7 +968,7 @@ import {
   CreateProviderKey,
   DeleteProviderKey,
   GetAllOrganizationCredential,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Store a provider API key
 const response = await CreateProviderKey(config, request, authHeader);
@@ -991,7 +991,7 @@ DeleteProviderKey(config, providerKeyId, (err, response) => {
 Connect to external platforms (Google, GitHub, Slack, etc.) via OAuth.
 
 ```ts
-import { GeneralConnect, GetConnectorFiles } from "@rapidaai/react";
+import { GeneralConnect, GetConnectorFiles } from "@Quantum AIai/react";
 
 // Establish an OAuth connection
 GeneralConnect(config, "google", code, state, scope, authHeader, (err, response) => {
@@ -1011,7 +1011,7 @@ GetConnectorFiles(config, "google", criterias, authHeader, (err, response) => {
 Access audit logs for tracking platform operations.
 
 ```ts
-import { GetActivities, GetActivity } from "@rapidaai/react";
+import { GetActivities, GetActivity } from "@Quantum AIai/react";
 
 // List audit logs with pagination and filtering
 GetActivities(config, projectId, page, pageSize, criteria, (err, response) => {
@@ -1031,7 +1031,7 @@ GetActivity(config, logId, (err, response) => {
 Retrieve assistant telemetry data (latency, usage, performance metrics).
 
 ```ts
-import { GetAllAssistantTelemetry } from "@rapidaai/react";
+import { GetAllAssistantTelemetry } from "@Quantum AIai/react";
 
 const response = await GetAllAssistantTelemetry(config, request, authHeader);
 console.log("Telemetry:", response.getTelemetryList());
@@ -1047,7 +1047,7 @@ Manage notification preferences.
 import {
   GetNotificationSetting,
   UpdateNotificationSetting,
-} from "@rapidaai/react";
+} from "@Quantum AIai/react";
 
 // Get current settings
 const settings = await GetNotificationSetting(config, request, authHeader);

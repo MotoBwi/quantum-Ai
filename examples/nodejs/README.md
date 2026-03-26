@@ -1,13 +1,13 @@
-# Rapida.ai Node.js Recipes
+# Quantum AI.ai Node.js Recipes
 
-The **Rapida.ai Node.js SDK** provides an efficient way to integrate Rapida.ai's services into your applications. This library includes examples and use cases to help you get started quickly.
+The **Quantum AI.ai Node.js SDK** provides an efficient way to integrate Quantum AI.ai's services into your applications. This library includes examples and use cases to help you get started quickly.
 
 ## Installation
 
-Add the Rapida.ai Node.js SDK to your project by running:
+Add the Quantum AI.ai Node.js SDK to your project by running:
 
 ```sh
-npm install @rapidaai/nodejs
+npm install @Quantum AIai/nodejs
 ```
 
 For other language SDKs, visit the documentation link below.
@@ -15,11 +15,11 @@ For other language SDKs, visit the documentation link below.
 ## Documentation
 
 Comprehensive documentation for the SDK can be found here:
-[Rapida.ai Documentation](https://doc.rapida.ai/introduction/overview)
+[Quantum AI.ai Documentation](https://doc.Quantum AI.ai/introduction/overview)
 
 ## Contact
 
-If you have questions or need support, feel free to reach out to **Prashant at `prashant@rapida.ai`**.
+If you have questions or need support, feel free to reach out to **Prashant at `prashant@Quantum AI.ai`**.
 
 ## Use Cases and Examples
 

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive comparison between two audio resampler implementations in the Rapida Voice AI platform:
+This document provides a comprehensive comparison between two audio resampler implementations in the Quantum AI Voice AI platform:
 
 - **Default Resampler**: Simple linear interpolation (pure Go)
 - **SoXr Resampler**: High-quality libsoxr-based resampling (using `github.com/tphakala/go-audio-resampler`)
@@ -364,7 +364,7 @@ benchstat default.txt soxr.txt
 
 ### Performance Winner: **Default Resampler** 🏆
 
-The **Default Resampler** is the clear winner for the Rapida Voice AI platform:
+The **Default Resampler** is the clear winner for the Quantum AI Voice AI platform:
 
 | Metric          | Advantage             |
 | --------------- | --------------------- |
@@ -384,7 +384,7 @@ For **voice applications**, the audio quality difference is **negligible**:
 
 ### Final Recommendation
 
-**Use Default Resampler** as the primary resampler for Rapida Voice AI platform. Reserve SoXr for specialized high-fidelity offline processing if needed.
+**Use Default Resampler** as the primary resampler for Quantum AI Voice AI platform. Reserve SoXr for specialized high-fidelity offline processing if needed.
 
 ---
 
@@ -413,4 +413,4 @@ BenchmarkHighConcurrency-8                2 602919500 ns/op 1311151840 B/op 2998
 **Document Version**: 1.0  
 **Last Updated**: January 10, 2026  
 **Author**: AI Assistant  
-**Platform**: Rapida Voice AI
+**Platform**: Quantum AI Voice AI
