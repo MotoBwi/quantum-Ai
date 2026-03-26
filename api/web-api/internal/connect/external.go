@@ -1,0 +1,140 @@
+package internal_connect
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/google/uuid"
+	"golang.org/x/oauth2"
+
+	config "github.com/rapidaai/api/web-api/config"
+	internal_entity "github.com/rapidaai/api/web-api/internal/entity"
+	"github.com/rapidaai/pkg/commons"
+	"github.com/rapidaai/pkg/connectors"
+	gorm_models "github.com/rapidaai/pkg/models/gorm"
+	"github.com/rapidaai/pkg/types"
+)
+
+type ExternalConnectToken interface {
+	Token() *oauth2.Token
+	Map() map[string]interface{}
+}
+
+type ExternalConnect struct {
+	cfg      *config.WebAppConfig
+	log      commons.Logger
+	postgres connectors.PostgresConnector
+}
+
+func NewExternalConnect(cfg *config.WebAppConfig, logger commons.Logger, postgres connectors.PostgresConnector) ExternalConnect {
+	return ExternalConnect{
+		cfg:      cfg,
+		log:      logger,
+		postgres: postgres,
+	}
+}
+
+// return id that will use as state
+func (ec *ExternalConnect) EncodeState(
+	ctx context.Context,
+	provider string,
+	projectid uint64,
+	organizationid uint64,
+	redirect string) (string, error) {
+	db := ec.postgres.DB(ctx)
+	identifier := uuid.NewString()
+
+	eConnect := &internal_entity.OAuthExternalConnect{
+		Organizational: gorm_models.Organizational{
+			ProjectId:      projectid,
+			OrganizationId: organizationid,
+		},
+		Identifier: identifier,
+		Provider:   provider,
+		RedirectTo: redirect,
+	}
+	tx := db.Save(eConnect)
+	if err := tx.Error; err != nil {
+		return identifier, err
+	}
+	return identifier, nil
+}
+
+func (ec *ExternalConnect) DecodeState(ctx context.Context, auth types.SimplePrinciple, identifier string) (*internal_entity.OAuthExternalConnect, error) {
+	db := ec.postgres.DB(ctx)
+	var ct internal_entity.OAuthExternalConnect
+	tx := db.Last(&ct, "identifier = ?", identifier)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &ct, nil
+}
+
+func (ec *ExternalConnect) ToToken(value map[string]interface{}) (*oauth2.Token, string, error) {
+	// Extract access token
+
+	connect, ok := value["connect"].(string)
+	if !ok {
+		return nil, connect, errors.New("connect not found or invalid type, how will identify what purpose your code will be used")
+	}
+
+	token := oauth2.Token{}
+	accessToken, ok := value["accessToken"].(string)
+	if !ok {
+		return nil, connect, errors.New("access_token not found or invalid type")
+	}
+	token.AccessToken = accessToken
+	// Extract token type
+	tokenType, ok := value["tokenType"].(string)
+	if ok {
+		token.TokenType = tokenType
+	}
+
+	// Extract refresh token, if present
+	refreshToken, ok := value["refreshToken"].(string)
+	if ok {
+		token.RefreshToken = refreshToken
+	}
+
+	if expiryStr, ok := value["expiry"].(string); ok {
+		expiry, err := time.Parse(time.RFC3339, expiryStr)
+		if err != nil {
+			ec.log.Errorf("not able to parse expire time: %v time = %v", err, expiryStr)
+			return nil, connect, fmt.Errorf("error parsing expiry time: %v", err)
+		}
+		token.Expiry = expiry
+	}
+
+	ec.log.Debugf("to_token returning the respo. s, keep in mind that expire is something need to be very precies %+v", token)
+	// Construct and return the token
+	return &token, connect, nil
+}
+
+func (ec *ExternalConnect) NewHttpClient() *resty.Client {
+	return ec.GetClient(nil)
+}
+
+func (ec *ExternalConnect) GetClient(hc *http.Client) *resty.Client {
+	ct := resty.New()
+	if hc != nil {
+		ct = resty.NewWithClient(hc)
+	}
+
+	if ec.cfg.IsDevelopment() {
+		ct.SetDebug(true)
+	}
+	return ct
+}
+
+type OpenID struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Verified bool   `json:"verified_email"`
+	Id       string `json:"id"`
+	Source   string `json:"source"`
+	Token    string `json:"token"`
+}

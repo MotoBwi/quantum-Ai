@@ -1,0 +1,607 @@
+.PHONY: help up down build rebuild logs clean restart ps shell db-shell \
+        up-all up-all-with-knowledge up-web up-integration up-endpoint up-db up-redis up-opensearch deps deps-knowledge \
+        down-all down-web down-integration down-endpoint down-db down-redis down-opensearch \
+        build-all build-all-with-knowledge build-web build-integration build-endpoint \
+        rebuild-all rebuild-all-with-knowledge rebuild-web rebuild-integration rebuild-endpoint \
+        logs-all logs-web logs-integration logs-endpoint logs-db logs-redis logs-opensearch \
+        restart-all restart-web restart-integration restart-endpoint \
+        ps-all shell-web shell-integration shell-endpoint db-shell \
+        push-base-images \
+        push-rapida-golang-bookworm push-rapida-golang-alpine push-rapida-alpine \
+        push-rapida-debian-slim push-rapida-node-alpine push-rapida-python \
+        test-tts-integration test-stt-integration test-transformer-integration
+
+COMPOSE           := DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose.yml
+COMPOSE_KNOWLEDGE := DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose.yml -f docker-compose.knowledge.yml
+
+help:
+	@echo ""
+	@echo "╔════════════════════════════════════════════════════════════════╗"
+	@echo "║          Docker Compose Service Management                    ║"
+	@echo "╚════════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "STARTUP COMMANDS:"
+	@echo "  make up-all                    - Start all services (no opensearch/document-api)"
+	@echo "  make up-all-with-knowledge     - Start all services including opensearch and document-api"
+	@echo "  make up-web                    - Start web-api only"
+	@echo "  make up-integration            - Start integration-api only"
+	@echo "  make up-endpoint               - Start endpoint-api only"
+	@echo "  make up-db                     - Start PostgreSQL only"
+	@echo "  make up-redis                  - Start Redis only"
+	@echo "  make up-opensearch             - Start OpenSearch only"
+	@echo "  make up-nginx                  - Start nginx only"
+	@echo ""
+	@echo "KNOWLEDGE BASE (OpenSearch + document-api):"
+	@echo "  make up-all-with-knowledge     - Start all services including knowledge"
+	@echo "  make build-all-with-knowledge  - Build all images including document-api"
+	@echo "  make rebuild-all-with-knowledge- Rebuild all including document-api (no cache)"
+	@echo "  Note: Set OPENSEARCH__* vars in .assistant.env to enable knowledge features"
+	@echo ""
+	@echo "SHUTDOWN COMMANDS:"
+	@echo "  make down-all            - Stop all services"
+	@echo "  make down-web            - Stop web-api only"
+	@echo "  make down-integration    - Stop integration-api only"
+	@echo "  make down-endpoint       - Stop endpoint-api only"
+	@echo "  make down-db             - Stop PostgreSQL only"
+	@echo "  make down-redis          - Stop Redis only"
+	@echo "  make down-opensearch     - Stop OpenSearch only"
+	@echo "  make down-nginx       	  - Stop nginx only"
+	@echo ""
+	@echo "BUILD COMMANDS:"
+	@echo "  make build-all                 - Build all services (pulls rapida-* base images from Docker Hub)"
+	@echo "  make push-base-images          - Build + push all rapida-* base images (run when versions change)"
+	@echo "  make push-rapida-golang-bookworm - Rebuild + push rapidaai/rapida-golang:1.25.7-bookworm"
+	@echo "  make push-rapida-golang-alpine   - Rebuild + push rapidaai/rapida-golang:1.25.7-alpine"
+	@echo "  make push-rapida-alpine          - Rebuild + push rapidaai/rapida-alpine:3.21"
+	@echo "  make push-rapida-debian-slim     - Rebuild + push rapidaai/rapida-debian:bookworm-slim"
+	@echo "  make push-rapida-node-alpine     - Rebuild + push rapidaai/rapida-node:22-alpine"
+	@echo "  make push-rapida-python          - Rebuild + push rapidaai/rapida-python:3.11"
+	@echo "  make build-all-with-knowledge  - Build all services including document-api"
+	@echo "  make build-web                 - Build web-api image"
+	@echo "  make build-integration         - Build integration-api image"
+	@echo "  make build-endpoint            - Build endpoint-api image"
+	@echo "  make rebuild-all               - Rebuild all services (no cache, no document-api)"
+	@echo "  make rebuild-all-with-knowledge- Rebuild all including document-api (no cache)"
+	@echo "  make rebuild-web               - Rebuild web-api (no cache)"
+	@echo "  make rebuild-integration       - Rebuild integration-api (no cache)"
+	@echo "  make rebuild-endpoint          - Rebuild endpoint-api (no cache)"
+	@echo ""
+	@echo "MONITORING COMMANDS:"
+	@echo "  make logs-all            - View all service logs"
+	@echo "  make logs-web            - View web-api logs"
+	@echo "  make logs-integration    - View integration-api logs"
+	@echo "  make logs-endpoint       - View endpoint-api logs"
+	@echo "  make logs-db             - View PostgreSQL logs"
+	@echo "  make logs-redis          - View Redis logs"
+	@echo "  make logs-opensearch     - View OpenSearch logs"
+	@echo "  make ps-all              - Show all running containers"
+	@echo ""
+	@echo "RESTART COMMANDS:"
+	@echo "  make restart-all         - Restart all services"
+	@echo "  make restart-web         - Restart web-api"
+	@echo "  make restart-integration - Restart integration-api"
+	@echo "  make restart-endpoint    - Restart endpoint-api"
+	@echo ""
+	@echo "SHELL COMMANDS:"
+	@echo "  make shell-web           - Open web-api container shell"
+	@echo "  make shell-integration   - Open integration-api container shell"
+	@echo "  make shell-endpoint      - Open endpoint-api container shell"
+	@echo "  make shell-db           - Open PostgreSQL shell"
+	@echo ""
+	@echo "MAINTENANCE:"
+	@echo "  make clean               - Stop and remove containers, volumes, images"
+	@echo "  make clean-volumes       - Remove only volumes"
+	@echo "  make status              - Show container status and ports"
+	@echo ""
+	@echo "SETUP:"
+	@echo "  make setup-local         - Create directories and set permissions (sudo required)"
+	@echo ""
+
+# ============================================================================
+# STARTUP TARGETS - Individual Services
+# ============================================================================
+
+setup-local:
+	@echo "Creating local data directories..."
+	mkdir -p ${HOME}/rapida-data/assets/opensearch
+	mkdir -p ${HOME}/rapida-data/assets/db
+	mkdir -p ${HOME}/rapida-data/assets/redis
+	@echo "Setting permissions (sudo required)..."
+	sudo setfacl -m g:docker:rwx ${HOME}/rapida-data/
+	sudo chown -R 1000:1000 ${HOME}/rapida-data/assets/opensearch
+	@echo "✓ Setup complete. You can now run 'make up-all'"
+
+
+up-all:
+	@echo "Starting all services (without opensearch/document-api)..."
+	$(COMPOSE) up -d
+	@echo "✓ All services started"
+	@echo "  Run 'make up-all-with-knowledge' to include opensearch + document-api"
+	@$(MAKE) status
+
+up-all-with-knowledge:
+	@echo "Starting all services including knowledge base..."
+	$(COMPOSE_KNOWLEDGE) up -d
+	@echo "✓ All services started (with knowledge base)"
+	@$(MAKE) status
+
+up-ui:
+	@echo "Starting ui..."
+	$(COMPOSE) up -d ui
+	@echo "✓ ui started on port 3000"
+
+up-document:
+	@echo "Starting document-api..."
+	$(COMPOSE_KNOWLEDGE) up -d document-api
+	@echo "✓ document-api started on port 9010"
+
+up-web:
+	@echo "Starting web-api..."
+	$(COMPOSE) up -d web-api
+	@echo "✓ web-api started on port 9001"
+
+up-integration:
+	@echo "Starting integration-api..."
+	$(COMPOSE) up -d integration-api
+	@echo "✓ integration-api started on port 9004"
+
+up-endpoint:
+	@echo "Starting endpoint-api..."
+	$(COMPOSE) up -d endpoint-api
+	@echo "✓ endpoint-api started on port 9005"
+
+up-assistant:
+	@echo "Starting assistant-api..."
+	$(COMPOSE) up -d assistant-api
+	@echo "✓ assistant-api started on port 9007"
+
+up-db:
+	@echo "Starting PostgreSQL..."
+	$(COMPOSE) up -d postgres
+	@echo "✓ PostgreSQL started on port 5432"
+
+up-nginx:
+	@echo "Starting nginx..."
+	$(COMPOSE) up -d nginx
+	@echo "✓ nginx started on port 8080"
+
+up-redis:
+	@echo "Starting Redis..."
+	$(COMPOSE) up -d redis
+	@echo "✓ Redis started on port 6379"
+
+up-opensearch:
+	@echo "Starting OpenSearch..."
+	$(COMPOSE_KNOWLEDGE) up -d opensearch
+	@echo "✓ OpenSearch started on port 9200"
+
+# Legacy aliases
+up: up-all
+
+# ============================================================================
+# SHUTDOWN TARGETS - Individual Services
+# ============================================================================
+
+down-all:
+	@echo "Stopping all services..."
+	$(COMPOSE_KNOWLEDGE) down
+	@echo "✓ All services stopped"
+
+down-ui:
+	@echo "Stopping ui..."
+	$(COMPOSE) stop ui
+	@echo "✓ ui stopped"
+
+down-web:
+	@echo "Stopping web-api..."
+	$(COMPOSE) stop web-api
+	@echo "✓ web-api stopped"
+
+down-document:
+	@echo "Stopping document-api..."
+	$(COMPOSE_KNOWLEDGE) stop document-api
+	@echo "✓ document-api stopped"
+
+down-assistant:
+	@echo "Stopping assistant-api..."
+	$(COMPOSE) stop assistant-api
+	@echo "✓ assistant-api stopped"
+
+down-integration:
+	@echo "Stopping integration-api..."
+	$(COMPOSE) stop integration-api
+	@echo "✓ integration-api stopped"
+
+down-endpoint:
+	@echo "Stopping endpoint-api..."
+	$(COMPOSE) stop endpoint-api
+	@echo "✓ endpoint-api stopped"
+
+down-db:
+	@echo "Stopping PostgreSQL..."
+	$(COMPOSE) stop postgres
+	@echo "✓ PostgreSQL stopped"
+
+down-redis:
+	@echo "Stopping Redis..."
+	$(COMPOSE) stop redis
+	@echo "✓ Redis stopped"
+
+down-nginx:
+	@echo "Stopping nginx..."
+	$(COMPOSE) stop nginx
+	@echo "✓ nginx stopped"
+
+down-opensearch:
+	@echo "Stopping OpenSearch..."
+	$(COMPOSE_KNOWLEDGE) stop opensearch
+	@echo "✓ OpenSearch stopped"
+
+# Legacy alias
+down: down-all
+
+# ============================================================================
+# BUILD TARGETS
+# ============================================================================
+
+push-rapida-golang-bookworm:
+	@echo "Building rapidaai/rapida-golang:1.25.7-bookworm..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-golang-bookworm.Dockerfile -t rapidaai/rapida-golang:1.25.7-bookworm .
+	docker push rapidaai/rapida-golang:1.25.7-bookworm
+	@echo "✓ rapidaai/rapida-golang:1.25.7-bookworm pushed"
+
+push-rapida-golang-alpine:
+	@echo "Building rapidaai/rapida-golang:1.25.7-alpine..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-golang-alpine.Dockerfile -t rapidaai/rapida-golang:1.25.7-alpine .
+	docker push rapidaai/rapida-golang:1.25.7-alpine
+	@echo "✓ rapidaai/rapida-golang:1.25.7-alpine pushed"
+
+push-rapida-alpine:
+	@echo "Building rapidaai/rapida-alpine:3.21..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-alpine.Dockerfile -t rapidaai/rapida-alpine:3.21 .
+	docker push rapidaai/rapida-alpine:3.21
+	@echo "✓ rapidaai/rapida-alpine:3.21 pushed"
+
+push-rapida-debian-slim:
+	@echo "Building rapidaai/rapida-debian:bookworm-slim..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-debian-slim.Dockerfile -t rapidaai/rapida-debian:bookworm-slim .
+	docker push rapidaai/rapida-debian:bookworm-slim
+	@echo "✓ rapidaai/rapida-debian:bookworm-slim pushed"
+
+push-rapida-node-alpine:
+	@echo "Building rapidaai/rapida-node:22-alpine..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-node-alpine.Dockerfile -t rapidaai/rapida-node:22-alpine .
+	docker push rapidaai/rapida-node:22-alpine
+	@echo "✓ rapidaai/rapida-node:22-alpine pushed"
+
+push-rapida-python:
+	@echo "Building rapidaai/rapida-python:3.11..."
+	DOCKER_BUILDKIT=1 docker build -f docker/base/rapida-python.Dockerfile -t rapidaai/rapida-python:3.11 .
+	docker push rapidaai/rapida-python:3.11
+	@echo "✓ rapidaai/rapida-python:3.11 pushed"
+
+push-base-images: push-rapida-golang-bookworm push-rapida-golang-alpine push-rapida-alpine push-rapida-debian-slim push-rapida-node-alpine push-rapida-python
+	@echo "✓ All base images pushed to Docker Hub"
+
+build-all:
+	@echo "Building all services (without document-api/opensearch)..."
+	$(COMPOSE) build ui web-api integration-api endpoint-api assistant-api
+	@echo "✓ All services built"
+
+build-all-with-knowledge:
+	@echo "Building all services including document-api..."
+	$(COMPOSE_KNOWLEDGE) build ui web-api integration-api endpoint-api assistant-api document-api
+	@echo "✓ All services built (with knowledge base)"
+
+build-ui:
+	@echo "Building ui..."
+	$(COMPOSE) build ui
+	@echo "✓ ui built"
+
+build-web:
+	@echo "Building web-api..."
+	$(COMPOSE) build web-api
+	@echo "✓ web-api built"
+
+build-document:
+	@echo "Building document-api..."
+	$(COMPOSE_KNOWLEDGE) build document-api
+	@echo "✓ document-api built"
+
+build-assistant:
+	@echo "Building assistant-api..."
+	$(COMPOSE) build assistant-api
+	@echo "✓ assistant-api built"
+
+build-integration:
+	@echo "Building integration-api..."
+	$(COMPOSE) build integration-api
+	@echo "✓ integration-api built"
+
+build-endpoint:
+	@echo "Building endpoint-api..."
+	$(COMPOSE) build endpoint-api
+	@echo "✓ endpoint-api built"
+
+rebuild-all:
+	@echo "Rebuilding all services (no cache, without document-api/opensearch)..."
+	$(COMPOSE) build --no-cache ui web-api integration-api endpoint-api assistant-api
+	@echo "✓ All services rebuilt"
+
+rebuild-all-with-knowledge:
+	@echo "Rebuilding all services including document-api (no cache)..."
+	$(COMPOSE_KNOWLEDGE) build --no-cache ui web-api integration-api endpoint-api assistant-api document-api
+	@echo "✓ All services rebuilt (with knowledge base)"
+
+rebuild-web:
+	@echo "Rebuilding web-api (no cache)..."
+	$(COMPOSE) build --no-cache web-api
+	@echo "✓ web-api rebuilt"
+
+rebuild-nginx:
+	@echo "Rebuilding nginx (no cache)..."
+	$(COMPOSE) build --no-cache nginx
+	@echo "✓ nginx rebuilt"
+	
+rebuild-document:
+	@echo "Rebuilding document-api (no cache)..."
+	$(COMPOSE_KNOWLEDGE) build --no-cache document-api
+	@echo "✓ document-api rebuilt"
+
+
+rebuild-assistant:
+	@echo "Rebuilding assistant-api (no cache)..."
+	$(COMPOSE) build --no-cache assistant-api
+	@echo "✓ assistant-api rebuilt"
+
+rebuild-ui:
+	@echo "Rebuilding ui (no cache)..."
+	$(COMPOSE) build --no-cache ui
+	@echo "✓ ui rebuilt"
+
+rebuild-integration:
+	@echo "Rebuilding integration-api (no cache)..."
+	$(COMPOSE) build --no-cache integration-api
+	@echo "✓ integration-api rebuilt"
+
+rebuild-endpoint:
+	@echo "Rebuilding endpoint-api (no cache)..."
+	$(COMPOSE) build --no-cache endpoint-api
+	@echo "✓ endpoint-api rebuilt"
+
+# Legacy aliases
+build: build-web
+rebuild: rebuild-web
+
+# ============================================================================
+# LOGGING TARGETS
+# ============================================================================
+
+logs-all:
+	$(COMPOSE_KNOWLEDGE) logs -f
+
+logs-ui:
+	$(COMPOSE) logs -f ui
+
+logs-web:
+	$(COMPOSE) logs -f web-api
+
+
+logs-document:
+	$(COMPOSE_KNOWLEDGE) logs -f document-api
+
+
+logs-assistant:
+	$(COMPOSE) logs -f assistant-api
+
+logs-integration:
+	$(COMPOSE) logs -f integration-api
+
+logs-endpoint:
+	$(COMPOSE) logs -f endpoint-api
+
+logs-db:
+	$(COMPOSE) logs -f postgres
+
+logs-redis:
+	$(COMPOSE) logs -f redis
+
+logs-opensearch:
+	$(COMPOSE_KNOWLEDGE) logs -f opensearch
+
+# Legacy alias
+logs: logs-all
+
+# ============================================================================
+# RESTART TARGETS
+# ============================================================================
+
+restart-all:
+	@echo "Restarting all services..."
+	$(COMPOSE_KNOWLEDGE) restart
+	@echo "✓ All services restarted"
+
+restart-nginx:
+	@echo "Restarting nginx..."
+	$(COMPOSE) restart nginx
+	@echo "✓ nginx restarted"
+
+restart-ui:
+	@echo "Restarting ui..."
+	$(COMPOSE) restart ui
+	@echo "✓ ui restarted"
+
+restart-web:
+	@echo "Restarting web-api..."
+	$(COMPOSE) restart web-api
+	@echo "✓ web-api restarted"
+
+restart-document:
+	@echo "Restarting document-api..."
+	$(COMPOSE_KNOWLEDGE) restart document-api
+	@echo "✓ document-api restarted"
+
+
+restart-assistant:
+	@echo "Restarting assistant-api..."
+	$(COMPOSE) restart assistant-api
+	@echo "✓ assistant-api restarted"
+
+restart-integration:
+	@echo "Restarting integration-api..."
+	$(COMPOSE) restart integration-api
+	@echo "✓ integration-api restarted"
+
+restart-endpoint:
+	@echo "Restarting endpoint-api..."
+	$(COMPOSE) restart endpoint-api
+	@echo "✓ endpoint-api restarted"
+
+# Legacy alias
+restart: restart-all
+
+# ============================================================================
+# STATUS TARGETS
+# ============================================================================
+
+ps-all:
+	@echo ""
+	@echo "Running Containers:"
+	@echo "==================="
+	$(COMPOSE) ps
+	@echo ""
+
+status: ps-all
+	@echo "Service Ports:"
+	@echo "=============="
+	@echo "  UI:               http://localhost:3000"
+	@echo "  Web-API:          http://localhost:9001"
+	@echo "  Integration-API:  http://localhost:9004"
+	@echo "  Endpoint-API:     http://localhost:9005"
+	@echo "  Assistant-API:    http://localhost:9007"
+	@echo "  SIP:              udp://localhost:5090"
+	@echo "  PostgreSQL:       internal only (no host port)"
+	@echo "  Redis:            internal only (no host port)"
+	@echo "  OpenSearch:       internal only (no host port)"
+	@echo ""
+
+ps: ps-all
+
+# ============================================================================
+# SHELL/ACCESS TARGETS
+# ============================================================================
+
+shell-ui:
+	$(COMPOSE) exec ui sh
+
+shell-nginx:
+	$(COMPOSE) exec nginx sh
+
+shell-assistant:
+	$(COMPOSE) exec assistant-api sh
+
+shell-document:
+	$(COMPOSE_KNOWLEDGE) exec document-api sh
+
+shell-web:
+	$(COMPOSE) exec web-api sh
+
+shell-integration:
+	$(COMPOSE) exec integration-api sh
+
+shell-endpoint:
+	$(COMPOSE) exec endpoint-api sh
+
+shell-db:
+	$(COMPOSE) exec postgres psql -U rapida_user -d web_db
+
+# Legacy alias
+shell: shell-web
+
+# ============================================================================
+# MAINTENANCE TARGETS
+# ============================================================================
+
+clean-volumes:
+	@echo "Removing volumes..."
+	$(COMPOSE_KNOWLEDGE) down -v
+	@echo "✓ Volumes removed"
+
+clean:
+	@echo "Cleaning up Docker resources..."
+	$(COMPOSE_KNOWLEDGE) down -v
+	@echo "Removing built images..."
+	docker rmi $$(docker images | grep -E '(web-api|integration-api|endpoint-api|assistant-api|document-api|ui)' | awk '{print $$3}') 2>/dev/null || true
+	@echo "✓ Cleanup complete"
+
+# ============================================================================
+# QUICK DEVELOPMENT COMMANDS
+# ============================================================================
+
+# Start core dependencies (db, redis) without APIs
+deps:
+	@echo "Starting core dependencies only..."
+	$(COMPOSE) up -d postgres redis
+	@echo "✓ Dependencies started"
+
+# Start all dependencies including opensearch (for knowledge base)
+deps-knowledge:
+	@echo "Starting all dependencies including opensearch..."
+	$(COMPOSE_KNOWLEDGE) up -d postgres redis opensearch
+	@echo "✓ Dependencies started (with OpenSearch)"
+
+# Start full stack with UI
+full: build-all up-all
+
+# Development mode - start with rebuild
+dev: rebuild-all up-all logs-all
+
+
+
+# ============================================================================
+# RUN WITHOUT DOCKER TARGETS
+# ============================================================================
+
+
+
+run-document:
+	@echo "Running document-api without Docker..."
+	PYTHONPATH=api/document-api uvicorn app.main:app --host 0.0.0.0 --port 9010
+
+run-assistant:
+	@echo "Running assistant-api without Docker..."
+	go run cmd/assistant/assistant.go
+
+run-web:
+	@echo "Running web-api without Docker..."
+	go run cmd/web/web.go
+
+run-endpoint:
+	@echo "Running endpoint-api without Docker..."
+	go run cmd/endpoint/endpoint.go
+
+run-integration:
+	@echo "Running integration-api without Docker..."
+	go run cmd/integration/integration.go
+	
+run-ui:
+	@echo "Running UI with yarn start in ui folder..."
+	cd ui && yarn start
+# ============================================================================
+# INTEGRATION TESTS
+# ============================================================================
+
+test-tts-integration:
+	@echo "Running TTS integration tests (requires testdata/integration_config.yaml)..."
+	go test -tags integration -v -run TestTTS -timeout 120s ./api/assistant-api/internal/transformer/...
+
+test-stt-integration:
+	@echo "Running STT integration tests (requires testdata/integration_config.yaml)..."
+	go test -tags integration -v -run TestSTT -timeout 120s ./api/assistant-api/internal/transformer/...
+
+test-transformer-integration:
+	@echo "Running all transformer integration tests..."
+	go test -tags integration -v -timeout 180s ./api/assistant-api/internal/transformer/...
+# Add appropriate aliases for clarity
+run-{service-name}:
+	@echo "Please specify a valid service name: document-api, assistant, web, endpoint, or integration."

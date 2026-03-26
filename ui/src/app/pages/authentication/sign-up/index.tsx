@@ -1,0 +1,223 @@
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { FormActionHeading } from '@/app/components/heading/action-heading/form-action-heading';
+import { Helmet } from '@/app/components/helmet';
+import { SocialButtonGroup } from '@/app/components/form/button-group/SocialButtonGroup';
+import { IBlueBGArrowButton } from '@/app/components/form/button';
+import { Input } from '@/app/components/form/input';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { RegisterUser } from '@rapidaai/react';
+import { AuthenticateResponse } from '@rapidaai/react';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { useRapidaStore } from '@/hooks';
+import { ErrorMessage } from '@/app/components/form/error-message';
+import { ServiceError } from '@rapidaai/react';
+import { AuthContext } from '@/context/auth-context';
+import { FieldSet } from '@/app/components/form/fieldset';
+import { FormLabel } from '@/app/components/form-label';
+import { useWorkspace } from '@/workspace';
+import { connectionConfig } from '@/configs';
+import { useGlobalNavigation } from '@/hooks/use-global-navigator';
+
+/**
+ * External state get passed
+ */
+interface CustomizedState {
+  email: string;
+}
+
+export function SignUpPage() {
+  /**
+   * setting up authentication after creation of user
+   */
+  const workspace = useWorkspace();
+  const { setAuthentication } = useContext(AuthContext);
+  const location = useLocation();
+  const locationState = location?.state as CustomizedState;
+  const navigator = useGlobalNavigation();
+  /**
+   * loading context
+   */
+  const { loading, showLoader, hideLoader } = useRapidaStore();
+
+  /**
+   * To naviagate to dashboard
+   */
+  let navigate = useNavigate();
+
+  /**
+   * form controlling
+   */
+  const { register, handleSubmit, setValue } = useForm();
+
+  /**
+   * what if email get passed from home page
+   */
+  useEffect(() => {
+    if (locationState?.email) setValue('email', locationState.email);
+  }, [locationState]);
+
+  const [error, setError] = useState('');
+
+  //   redirectinng when needed
+  let { next } = useParams();
+
+  /**
+   * callback after registering user
+   */
+  const afterRegisterUser = useCallback(
+    (err: ServiceError | null, auth: AuthenticateResponse | null) => {
+      hideLoader();
+      if (auth?.getSuccess()) {
+        let at = auth.getData();
+
+        if (setAuthentication)
+          setAuthentication(at, () => {
+            if (next) return navigate(next);
+            return navigate('/dashboard');
+          });
+      } else {
+        let errorMessage = auth?.getError();
+        if (errorMessage) setError(errorMessage.getHumanmessage());
+        else
+          setError('Unable to process your request. please try again later.');
+        return;
+      }
+    },
+    [],
+  );
+
+  const onRegisterUser = data => {
+    showLoader('overlay');
+    RegisterUser(
+      connectionConfig,
+      data.email,
+      data.password,
+      data.name,
+      afterRegisterUser,
+    );
+  };
+
+  /**
+   * element
+   */
+
+  if (!workspace.authentication.signUp.enable) {
+    return (
+      <div className="flex flex-1">
+        <div className="max-w-md">
+          <div className="text-[32px] leading-10 text-gray-900 dark:text-gray-100">403</div>
+          <p className="text-[28px] leading-9 text-gray-900 dark:text-gray-100 mt-4">
+            Sign-up not enabled
+          </p>
+          <p className="mb-8 mt-2 text-sm text-gray-500 dark:text-gray-500">
+            Sign-up is currently disabled for this workspace. Please contact
+            your administrator for assistance.
+          </p>
+
+          <IBlueBGArrowButton
+            className="w-full justify-between h-11"
+            onClick={() => {
+              navigator.goTo('/');
+            }}
+          >
+            Go to signin
+          </IBlueBGArrowButton>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Helmet title="Signing up to your account"></Helmet>
+      <FormActionHeading
+        heading="Sign up"
+        action={
+          <a
+            className="text-sm text-primary underline hover:text-primary/80"
+            href="/auth/signin"
+          >
+            I already have an account
+          </a>
+        }
+      ></FormActionHeading>
+      <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit(onRegisterUser)}>
+        <FieldSet>
+          <FormLabel>Name</FormLabel>
+          <Input
+            autoComplete="name"
+            type="text"
+            required
+            className="bg-light-background"
+            placeholder="eg: John deo"
+            {...register('name', {
+              required: 'Please enter your name',
+            })}
+          ></Input>
+        </FieldSet>
+        <FieldSet>
+          <FormLabel>Email Address</FormLabel>
+          <Input
+            autoComplete="email"
+            type="email"
+            required
+            className="bg-light-background"
+            placeholder="eg: john@rapida.ai"
+            {...register('email', {
+              required: 'Please enter email',
+            })}
+          ></Input>
+        </FieldSet>
+        <FieldSet>
+          <FormLabel>Password</FormLabel>
+          <Input
+            autoComplete="password"
+            type="password"
+            required
+            className="bg-light-background"
+            placeholder="********"
+            {...register('password', {
+              required: 'Please enter password',
+            })}
+          ></Input>
+        </FieldSet>
+
+        <ErrorMessage message={error} />
+        <IBlueBGArrowButton
+          className="w-full justify-between h-11"
+          type="submit"
+          isLoading={loading}
+        >
+          Continue
+        </IBlueBGArrowButton>
+      </form>
+      <div className="mt-6 flex flex-col gap-3">
+        <FieldSet className="text-sm">
+          <p className="text-gray-600 dark:text-gray-400">
+            By signing up, you agree to the &nbsp;
+            <a
+              className="underline font-semibold"
+              target="_blank"
+              href="/static/terms-conditions"
+            >
+              Terms and Conditions
+            </a>
+            &nbsp; and &nbsp;
+            <a
+              href="/static/privacy-policy"
+              target="_blank"
+              className="underline font-semibold"
+            >
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </FieldSet>
+        <SocialButtonGroup
+          {...workspace.authentication.signIn.providers}
+        ></SocialButtonGroup>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,14 @@
+.vscode
+*.onnx
+# Allow small VAD models to be committed (< 3 MB each)
+!api/assistant-api/internal/vad/internal/silero_vad/models/*.onnx
+!api/assistant-api/internal/vad/internal/firered_vad/models/*.onnx
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+license-check-and-add.json
+.claude/settings.local.json
+
+# Integration test credentials (never commit real API keys)
+**/integration_config.yaml

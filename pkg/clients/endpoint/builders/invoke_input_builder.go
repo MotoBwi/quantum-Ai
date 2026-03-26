@@ -1,0 +1,95 @@
+// Copyright (c) 2023-2025 RapidaAI
+// Author: Prashant Srivastav <prashant@rapida.ai>
+//
+// Licensed under GPL-2.0 with Rapida Additional Terms.
+// See LICENSE.md or contact sales@rapida.ai for commercial usage.
+package endpoint_client_builders
+
+import (
+	"google.golang.org/protobuf/types/known/anypb"
+
+	"github.com/rapidaai/pkg/commons"
+	"github.com/rapidaai/pkg/utils"
+	protos "github.com/rapidaai/protos"
+)
+
+type inputInvokeBuilder struct {
+	logger commons.Logger
+}
+
+func NewInputInvokeBuilder(logger commons.Logger) InputInvokeBuilder {
+	return &inputInvokeBuilder{
+		logger: logger,
+	}
+}
+
+func (in *inputInvokeBuilder) Invoke(
+	endpointDef *protos.EndpointDefinition,
+	args map[string]*anypb.Any,
+	metadata map[string]*anypb.Any,
+	options map[string]*anypb.Any,
+) *protos.InvokeRequest {
+	request := &protos.InvokeRequest{
+		Endpoint: endpointDef,
+		Args:     args,
+		Metadata: metadata,
+		Options:  options,
+	}
+	return request
+}
+
+func (in *inputInvokeBuilder) Arguments(
+	opts map[string]interface{},
+	options map[string]*anypb.Any) map[string]*anypb.Any {
+	if options == nil {
+		options = make(map[string]*anypb.Any)
+	}
+	for key, value := range opts {
+		vl, err := utils.InterfaceToAnyValue(value)
+		if err != nil {
+			in.logger.Warnf("unable to encode the arguments in proto struct with error %+v", err)
+			continue
+		}
+		options[key] = vl
+	}
+
+	return options
+}
+
+func (in *inputInvokeBuilder) Options(
+	opts map[string]interface{},
+	options map[string]*anypb.Any) map[string]*anypb.Any {
+	// If options is nil, initialize it
+	if options == nil {
+		options = make(map[string]*anypb.Any)
+	}
+
+	for key, value := range opts {
+		structValue, err := utils.InterfaceToAnyValue(value)
+		if err != nil {
+			continue
+		}
+		options[key] = structValue
+	}
+
+	return options
+}
+
+func (in *inputInvokeBuilder) Metadata(
+	opts map[string]interface{},
+	options map[string]*anypb.Any) map[string]*anypb.Any {
+	// If options is nil, initialize it
+	if options == nil {
+		options = make(map[string]*anypb.Any)
+	}
+
+	for key, value := range opts {
+		structValue, err := utils.InterfaceToAnyValue(value)
+		if err != nil {
+			continue
+		}
+		options[key] = structValue
+	}
+
+	return options
+}

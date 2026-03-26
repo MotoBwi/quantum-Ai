@@ -1,0 +1,109 @@
+import React, { useCallback, useState } from 'react';
+import { Helmet } from '@/app/components/helmet';
+import { Input } from '@/app/components/form/input';
+import { ForgotPassword } from '@rapidaai/react';
+import { ForgotPasswordResponse } from '@rapidaai/react';
+import { useForm } from 'react-hook-form';
+import { useRapidaStore } from '@/hooks';
+import { ErrorMessage } from '@/app/components/form/error-message';
+import { IBlueBGArrowButton } from '@/app/components/form/button';
+import { ServiceError } from '@rapidaai/react';
+import { FieldSet } from '@/app/components/form/fieldset';
+import { FormLabel } from '@/app/components/form-label';
+import { FormActionHeading } from '@/app/components/heading/action-heading/form-action-heading';
+import { connectionConfig } from '@/configs';
+import { SuccessMessage } from '@/app/components/form/success-message';
+
+export function ForgotPasswordPage() {
+  /**
+   * handling the form submission
+   */
+  const { register, handleSubmit } = useForm();
+
+  /**
+   * loading
+   */
+  const { loading, showLoader, hideLoader } = useRapidaStore();
+
+  /**
+   * error and success message
+   */
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  /**
+   * after sending email for forgot password
+   */
+
+  const afterForgotPassword = useCallback(
+    (err: ServiceError | null, fpr: ForgotPasswordResponse | null) => {
+      hideLoader();
+      if (err) {
+        setError('unable to process your request. please try again later');
+      }
+      if (fpr?.getSuccess()) {
+        setError('');
+        setSuccessMessage(
+          "Thanks! An email was sent that will ask you to click on a link to verify that you own this account. If you don't get the email, please contact support@rapida.ai.",
+        );
+        //   return redirectToOnboarding();
+      } else {
+        let errorMessage = fpr?.getError();
+        if (errorMessage) setError(errorMessage.getHumanmessage());
+        else
+          setError('Unable to process your request. please try again later.');
+        return;
+      }
+    },
+    [],
+  );
+  /**
+   *
+   * @param data
+   */
+  const onForgotPassword = data => {
+    showLoader('overlay');
+    ForgotPassword(connectionConfig, data.email, afterForgotPassword);
+  };
+
+  return (
+    <>
+      <Helmet title="Forgot your password"></Helmet>
+      <FormActionHeading heading="Forgot Password"></FormActionHeading>
+      <form
+        className="flex flex-col gap-4 mt-6"
+        onSubmit={handleSubmit(onForgotPassword)}
+      >
+        <FieldSet>
+          <FormLabel>Email Address</FormLabel>
+          <Input
+            autoComplete="email"
+            type="email"
+            required
+            disabled={loading}
+            className="bg-light-background"
+            placeholder="eg: john@rapida.ai"
+            {...register('email')}
+          ></Input>
+        </FieldSet>
+        <ErrorMessage message={error} />
+        <SuccessMessage message={successMessage} />
+        <IBlueBGArrowButton
+          type="submit"
+          className="w-full justify-between h-11"
+          isLoading={loading}
+        >
+          Send Email
+        </IBlueBGArrowButton>
+      </form>
+      <p className="mt-6 text-center">
+        <a
+          className="text-sm text-primary underline hover:text-primary/80"
+          href="/auth/signin"
+        >
+          Back to sign in?
+        </a>
+      </p>
+    </>
+  );
+}

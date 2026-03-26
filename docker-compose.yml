@@ -1,0 +1,215 @@
+
+services:
+  postgres:
+    platform: linux/amd64
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: rapida_user
+      POSTGRES_PASSWORD: rapida_db_password
+      POSTGRES_DB: web_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${HOME}/rapida-data/assets/db:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - api-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U rapida_user -d web_db && pg_isready -U rapida_user -d assistant_db && pg_isready -U rapida_user -d integration_db && pg_isready -U rapida_user -d endpoint_db" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # Redis Cache
+  redis:
+    platform: linux/amd64
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ${HOME}/rapida-data/assets/redis:/data
+    networks:
+      - api-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+
+
+  nginx:
+    platform: linux/amd64
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ui_build:/usr/share/nginx/html:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - ${HOME}/rapida-data/assets:/app/rapida-data/assets
+    depends_on:
+      - web-api
+      - assistant-api
+      - integration-api
+      - endpoint-api
+      - ui
+    networks:
+      - api-network
+
+  ui:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/ui/Dockerfile
+      args:
+        EDITION: local
+    container_name: ui
+    ports:
+      - "3000:3000"
+    networks:
+      - api-network
+
+  # Web API Service
+  web-api:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/web-api/Dockerfile
+    container_name: web-api
+    # ports:
+    #   - "9001:9001"
+    env_file:
+      - ./docker/web-api/.web.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./docker/web-api/.web.env:/opt/apps/env/.web.env:ro
+      - ${HOME}/rapida-data/assets:/app/rapida-data/assets
+      - go-mod-cache:/go/pkg/mod
+
+    networks:
+      - api-network
+
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--method=GET", "-O", "/dev/null",  "http://localhost:9001/readiness/" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Assistant API Service
+  assistant-api:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/assistant-api/Dockerfile
+    container_name: assistant-api
+    ports:
+      - "9007:9007"                          # WebSocket and REST API
+      - "4573:4573"                          # AudioSocket for Asterisk integration
+      - "5090:5090/udp"                      # SIP signaling
+      - "10000-10199:10000-10199/udp"        # RTP media (100 concurrent calls)
+      - "20000-20100:20000-20100/udp"        # WebRTC ICE/media
+    env_file:
+      - ./docker/assistant-api/.assistant.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    volumes:
+      - ./docker/assistant-api/.assistant.env:/opt/apps/env/.assistant.env:ro
+      - ${HOME}/rapida-data/assets:/app/rapida-data/assets
+      - go-mod-cache:/go/pkg/mod
+
+    networks:
+      - api-network
+
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--method=GET", "-O", "/dev/null",  "http://localhost:9007/readiness/" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Integration API Service
+  integration-api:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/integration-api/Dockerfile
+    container_name: integration-api
+    ports:
+      - "9004:9004"
+    env_file:
+      - ./docker/integration-api/.integration.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    volumes:
+      - ./docker/integration-api/.integration.env:/opt/apps/env/.integration.env:ro
+      - ${HOME}/rapida-data/assets:/app/rapida-data/assets
+      - go-mod-cache:/go/pkg/mod
+
+    networks:
+      - api-network
+
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--method=GET", "-O", "/dev/null",  "http://localhost:9004/readiness/" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Endpoint API Service
+  endpoint-api:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/endpoint-api/Dockerfile
+    container_name: endpoint-api
+    ports:
+      - "9005:9005"
+    env_file:
+      - ./docker/endpoint-api/.endpoint.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    volumes:
+      - ./docker/endpoint-api/.endpoint.env:/opt/apps/env/.endpoint.env:ro
+      - ${HOME}/rapida-data/assets:/app/rapida-data/assets
+      - go-mod-cache:/go/pkg/mod
+
+    networks:
+      - api-network
+
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--method=GET", "-O", "/dev/null",  "http://localhost:9005/readiness/" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+  go-mod-cache:
+  ui_build:

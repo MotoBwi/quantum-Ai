@@ -1,0 +1,666 @@
+[
+    {
+        "name": "Silero Vad",
+        "code": "silero_vad",
+        "featureList": [
+            "vad"
+        ]
+    },
+    {
+        "name": "Ten Vad",
+        "code": "ten_vad",
+        "featureList": [
+            "vad"
+        ]
+    },
+    {
+        "name": "FireRed Vad",
+        "code": "firered_vad",
+        "featureList": [
+            "vad"
+        ]
+    },
+    {
+        "name": "Silence based",
+        "code": "silence_based_eos",
+        "featureList": [
+            "end_of_speech"
+        ]
+    },
+    {
+        "name": "LiveKit Turn Detector",
+        "code": "livekit_eos",
+        "featureList": [
+            "end_of_speech"
+        ]
+    },
+    {
+        "name": "Pipecat Smart Turn",
+        "code": "pipecat_smart_turn_eos",
+        "featureList": [
+            "end_of_speech"
+        ]
+    },
+    {
+        "name": "RN Noise",
+        "code": "rn_noise",
+        "featureList": [
+            "noise_cancellation"
+        ]
+    },
+    {
+        "name": "Krsip",
+        "code": "krsip",
+        "featureList": [
+            "wip_noise_cancellation"
+        ]
+    },
+    {
+        "code": "vonage",
+        "name": "Vonage",
+        "description": "Cloud communication platform that provides voice, messaging, and video solutions for businesses.",
+        "image": "https://cdn-01.rapida.ai/partners/vonage.jpeg",
+        "featureList": [
+            "telephony",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "application_id",
+                "type": "string",
+                "label": "Application Id"
+            },
+            {
+                "name": "private_key",
+                "type": "text",
+                "label": "Private key"
+            }
+        ]
+    },
+    {
+        "name": "Exotel",
+        "code": "exotel",
+        "description": "Cloud telephony platform offering voice and messaging services for businesses.",
+        "image": "https://cdn-01.rapida.ai/partners/exotel.jpeg",
+        "featureList": [
+            "telephony",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "account_sid",
+                "type": "string",
+                "label": "Account sid"
+            },
+            {
+                "name": "client_id",
+                "type": "string",
+                "label": "Client id"
+            },
+            {
+                "name": "client_secret",
+                "type": "string",
+                "label": "Client secret"
+            }
+        ]
+    },
+    {
+        "code": "asterisk",
+        "name": "Asterisk",
+        "description": "Open-source PBX platform for building custom telephony solutions with SIP/PJSIP support.",
+        "image": "https://www.asterisk.org/wp-content/uploads/asterisk-logo.png",
+        "featureList": [
+            "telephony",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "ari_url",
+                "type": "string",
+                "label": "ARI URL (e.g., http://asterisk.example.com:8088)"
+            },
+            {
+                "name": "ari_user",
+                "type": "string",
+                "label": "ARI Username"
+            },
+            {
+                "name": "ari_password",
+                "type": "string",
+                "label": "ARI Password"
+            }
+        ],
+        "website": "https://www.asterisk.org"
+    },
+    {
+        "code": "sip",
+        "name": "SIP Trunk",
+        "description": "Direct SIP trunk connection for voice calls. Connect any SIP-compatible PBX or carrier.",
+        "image": "https://cdn-01.rapida.ai/partners/tools/sip.png",
+        "featureList": [
+            "telephony",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "sip_uri",
+                "type": "string",
+                "label": "SIP URI (e.g., sip:trunk.provider.com:5060)"
+            },
+            {
+                "name": "sip_username",
+                "type": "string",
+                "label": "SIP Username (optional)"
+            },
+            {
+                "name": "sip_password",
+                "type": "string",
+                "label": "SIP Password (optional)"
+            }
+        ]
+    },
+    {
+        "code": "twilio",
+        "name": "Twilio",
+        "description": "Cloud communications platform for building SMS, voice, and messaging applications",
+        "image": "https://cdn-01.rapida.ai/partners/tools/twilio-icon.svg",
+        "featureList": [
+            "telephony",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "account_token",
+                "type": "string",
+                "label": "Account token"
+            },
+            {
+                "name": "account_sid",
+                "type": "string",
+                "label": "Account sid"
+            }
+        ]
+    },
+    {
+        "code": "aws",
+        "name": "AWS",
+        "description": "Amazon Web Services (AWS) offers a broad set of global cloud-based products including compute, storage, databases, analytics, and AI services.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/1254821443460603620.png",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "access_key_id",
+                "type": "string",
+                "label": "Access Key ID"
+            },
+            {
+                "name": "secret_access_key",
+                "type": "string",
+                "label": "Secret Access Key"
+            },
+            {
+                "name": "region",
+                "type": "string",
+                "label": "Region"
+            }
+        ],
+        "website": "https://aws.amazon.com"
+    },
+    {
+        "code": "azure-speech-service",
+        "name": "Azure Speech Services",
+        "description": "Azure Cognitive Service enables to access all the cognitive apis like stt, tts",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/198796716894742122.png",
+        "url": "/integration/models/azure-speech-service",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "subscription_key",
+                "type": "string",
+                "label": "Subscription Key"
+            },
+            {
+                "name": "endpoint",
+                "type": "string",
+                "label": "Endpoint"
+            }
+        ],
+        "humanname": "Azure Speech Services",
+        "website": "https://azure.microsoft.com/en-us/products/ai-services/openai-service"
+    },
+    {
+        "code": "azure-foundry",
+        "name": "Azure Microsoft Foundry",
+        "description": "Microsoft Foundry is a unified Azure platform-as-a-service offering for enterprise AI operations, model builders.",
+        "image": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/product-icon-Microsoft-Foundry-48x48?resMode=sharp2&op_usm=1.5,0.65,15,0&wid=47&hei=47&qlt=100&fit=constrain",
+        "featureList": [
+            "text",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "subscription_key",
+                "type": "string",
+                "label": "Subscription Key"
+            },
+            {
+                "name": "endpoint",
+                "type": "string",
+                "label": "Endpoint"
+            }
+        ],
+        "humanname": "Azure Microsoft Foundry",
+        "website": "https://azure.microsoft.com/en-us/products/ai-foundry"
+    },
+    {
+        "code": "anthropic",
+        "name": "Anthropic",
+        "description": "A faster, cheaper yet still very capable version of Claude, which can handle a range of tasks including casual dialogue, text analysis, summarization, and document comprehension.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/1987967168347635712.jpg",
+        "featureList": [
+            "text",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "humanname": "Anthropic",
+        "website": "https://www.anthropic.com"
+    },
+    {
+        "code": "cohere",
+        "name": "Cohere",
+        "description": "A smaller and faster version of Cohere's command model with almost as much capability but improved speed.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/1987967168435716096.png",
+        "featureList": [
+            "text",
+            "embedding",
+            "external",
+            "reranker"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "humanname": "Cohere",
+        "website": "https://cohere.com"
+    },
+    {
+        "code": "openai",
+        "name": "OpenAI",
+        "description": "GPT-4 from OpenAI has broad general knowledge and domain expertise allowing it to follow complex instructions in natural language and solve difficult problems accurately.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/1987967168452493312.svg",
+        "featureList": [
+            "text",
+            "embedding",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "humanname": "OpenAI",
+        "website": "https://openai.com"
+    },
+    {
+        "code": "mistral",
+        "name": "Mistral",
+        "description": "Mistral specializes in creating fast, secure, open-source large language models (LLMs).",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/198796716894742119.jpeg",
+        "featureList": [
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "humanname": "Mistral",
+        "website": "https://mistral.ai"
+    },
+    {
+        "code": "huggingface",
+        "name": "Hugging Face",
+        "description": "Hugging Face is a machine learning (ML) and data science platform and community that helps users build, deploy and train machine learning models.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/198796716894742120.jpeg",
+        "featureList": [
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "humanname": "Hugging Face",
+        "website": "https://huggingface.co"
+    },
+    {
+        "code": "google-speech-service",
+        "name": "Google Speech Service",
+        "description": "Google Speech service offers state-of-the-art speech-to-text and text-to-speech capabilities with high accuracy and support for multiple languages.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/198796716894742118.jpg",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "url": "/integration/models/google-speech-service",
+        "configurations": [
+            {
+                "name": "project_id",
+                "type": "string",
+                "label": "Project ID"
+            },
+            {
+                "name": "service_account_key",
+                "type": "text",
+                "label": "Service Account Key (JSON)"
+            }
+        ],
+        "website": "https://cloud.google.com/"
+    },
+    {
+        "code": "gemini",
+        "name": "Gemini / Google AI Studio",
+        "description": "Gemini is Google latest family of large language models.",
+        "image": "https://static.vecteezy.com/system/resources/previews/055/687/055/non_2x/rectangle-gemini-google-icon-symbol-logo-free-png.png",
+        "featureList": [
+            "text",
+            "embedding",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://ai.google.dev/"
+    },
+    {
+        "code": "vertexai",
+        "name": "Google Vertex AI",
+        "description": "Google Vertex AI is a fully-managed, unified AI development platform.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKrTg_Ygs_SNsALOCO1-s6-KYS2CKFd0LvfA&s",
+        "featureList": [
+            "text",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "project_id",
+                "type": "string",
+                "label": "Project ID"
+            },
+            {
+                "name": "region",
+                "type": "string",
+                "label": "Region"
+            },
+            {
+                "name": "service_account_key",
+                "type": "text",
+                "label": "Service Account Key (JSON)"
+            }
+        ],
+        "website": "https://cloud.google.com/vertex-ai"
+    },
+    {
+        "code": "deepgram",
+        "name": "Deepgram",
+        "description": "Deepgram provides cutting-edge speech recognition services using advanced AI technology. Known for high accuracy and speed in transcribing spoken language into text.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/2123891723608588082.jpg",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "url": "/integration/models/deepgram",
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://deepgram.com"
+    },
+    {
+        "code": "cartesia",
+        "name": "Cartesia",
+        "description": "Advanced Text-to-Speech and Speech-to-Text solutions",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/cartesia.jpg",
+        "url": "/integration/models/cartesia",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://cartesia.com"
+    },
+    {
+        "code": "elevenlabs",
+        "name": "ElevenLabs",
+        "description": "ElevenLabs offers state-of-the-art AI voice technology, providing high-quality text-to-speech synthesis with natural-sounding voices and customization options.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/11labs.png",
+        "url": "/integration/models/elevenlabs",
+        "featureList": [
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://elevenlabs.io"
+    },
+    {
+        "code": "rime",
+        "name": "Rime",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/rime.jpeg",
+        "description": "Rime offers ultra-low-latency text-to-speech with natural-sounding voices via WebSocket streaming.",
+        "featureList": [
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://rime.ai"
+    },
+    {
+        "code": "assemblyai",
+        "name": "AssemblyAI",
+        "description": "AssemblyAI offers state-of-the-art speech recognition and audio intelligence APIs. Known for high accuracy and advanced features like speaker diarization and sentiment analysis.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/assemblyai.png",
+        "featureList": [
+            "stt",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://www.assemblyai.com"
+    },
+    {
+        "code": "sarvamai",
+        "name": "Sarvam Ai",
+        "description": "Sarvam AI is an Indian startup that develops large language models (LLMs) and AI platforms specifically for India.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/sarvam-ai.jpg",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://www.sarvam.ai/"
+    },
+    {
+        "code": "resembleai",
+        "name": "Resemble AI",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/resemble.png",
+        "description": "Resemble AI provides high-quality voice cloning and text-to-speech synthesis with real-time WebSocket streaming.",
+        "featureList": [
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://www.resemble.ai"
+    },
+    {
+        "code": "neuphonic",
+        "name": "Neuphonic",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/neuphonic.png",
+        "description": "Neuphonic offers ultra-low-latency text-to-speech with natural-sounding voices and multilingual support.",
+        "featureList": [
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://www.neuphonic.com"
+    },
+    {
+        "code": "minimax",
+        "name": "MiniMax",
+        "description": "MiniMax provides advanced text-to-speech synthesis with streaming SSE support and multiple voice options.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/minimax.png",
+        "featureList": [
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            },
+            {
+                "name": "group_id",
+                "type": "string",
+                "label": "Group ID"
+            }
+        ],
+        "website": "https://www.minimax.io"
+    },
+    {
+        "code": "groq",
+        "name": "Groq",
+        "description": "Groq provides ultra-fast AI inference with OpenAI-compatible speech-to-text and text-to-speech APIs.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/gorq.png",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://groq.com"
+    },
+    {
+        "code": "speechmatics",
+        "name": "Speechmatics",
+        "description": "Speechmatics offers enterprise-grade speech recognition and text-to-speech with high accuracy and multilingual support.",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/speechmatics.png",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            }
+        ],
+        "website": "https://www.speechmatics.com"
+    },
+    {
+        "code": "nvidia",
+        "name": "NVIDIA",
+        "image": "https://rapida-assets-01.s3.ap-south-1.amazonaws.com/providers/nvidia.png",
+        "description": "NVIDIA Riva provides GPU-accelerated speech AI with real-time speech recognition and text-to-speech synthesis.",
+        "featureList": [
+            "stt",
+            "tts",
+            "external"
+        ],
+        "configurations": [
+            {
+                "name": "key",
+                "type": "string",
+                "label": "API Key"
+            },
+            {
+                "name": "function_id",
+                "type": "string",
+                "label": "Function ID"
+            }
+        ],
+        "website": "https://www.nvidia.com/en-us/ai-data-science/products/riva/"
+    }
+]

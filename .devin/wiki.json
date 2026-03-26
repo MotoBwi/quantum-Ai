@@ -1,0 +1,317 @@
+{
+    "repo_notes": [
+        {
+            "content": "Rapida: Open-source voice AI orchestration platform. Get services running in 4 commands. Built with Go, gRPC, and designed for developers."
+        }
+    ],
+    "pages": [
+        {
+            "title": "Quick Start",
+            "purpose": "Get all services running in 4 simple commands using Docker. Covers clone, setup, build, and start.",
+            "page_notes": [
+                {
+                    "content": "This is the first thing developers see. Should be action-focused, not explanatory."
+                }
+            ]
+        },
+        {
+            "title": "Features & Principles",
+            "purpose": "Introduce Rapida's core capabilities: real-time voice orchestration, LLM-agnostic architecture, production reliability, observability, tooling, and enterprise readiness",
+            "page_notes": [
+                {
+                    "content": "High-level overview of what Rapida does and why it matters."
+                }
+            ]
+        },
+        {
+            "title": "Development",
+            "purpose": "Guide developers on working with services locally: starting specific services, viewing logs, rebuilding after code changes, and configuring environment variables",
+            "page_notes": [
+                {
+                    "content": "Focus on practical workflows for developers actively building on Rapida."
+                }
+            ]
+        },
+        {
+            "title": "Deployment",
+            "purpose": "Cover Docker Compose production setup, Kubernetes, and cloud platform deployments (AWS, GCP, Azure)",
+            "page_notes": [
+                {
+                    "content": "For teams ready to deploy beyond local development."
+                }
+            ]
+        },
+        {
+            "title": "Troubleshooting & Commands",
+            "purpose": "Quick reference for common issues, Makefile commands, and debugging steps",
+            "page_notes": [
+                {
+                    "content": "Concise troubleshooting guide in the README."
+                }
+            ]
+        },
+        {
+            "title": "Configuration System",
+            "purpose": "Deep dive into service configuration: environment variables, AppConfig structure, service-specific settings, and how settings propagate",
+            "page_notes": [
+                {
+                    "content": "For detailed documentation site (doc.rapida.ai), not README."
+                }
+            ]
+        },
+        {
+            "title": "Application Configuration",
+            "purpose": "Technical documentation: AppConfig struct, required fields, validation, loading mechanisms",
+            "parent": "Configuration System",
+            "page_notes": [
+                {
+                    "content": "For internal/detailed documentation site."
+                }
+            ]
+        },
+        {
+            "title": "Environment Variables",
+            "purpose": "Complete list of all environment variables across services: database, Redis, LLM APIs, telephony credentials, logging",
+            "parent": "Configuration System",
+            "page_notes": [
+                {
+                    "content": "Reference for configuring each service."
+                }
+            ]
+        },
+        {
+            "title": "Data Layer",
+            "purpose": "Architecture documentation: PostgreSQL, Redis, OpenSearch; Connector abstraction; schemas; caching strategies",
+            "page_notes": [
+                {
+                    "content": "For developers exploring codebase architecture."
+                }
+            ]
+        },
+        {
+            "title": "Database Connectors",
+            "purpose": "Implementation details: Connector interface, PostgresConnector, RedisConnector, OpenSearchConnector",
+            "parent": "Data Layer",
+            "page_notes": [
+                {
+                    "content": "For developers working with data layer."
+                }
+            ]
+        },
+        {
+            "title": "Database Schemas",
+            "purpose": "Schema reference: assistant conversations, endpoints, integrations, deployments, relationships, migrations",
+            "parent": "Data Layer",
+            "page_notes": [
+                {
+                    "content": "Reference for database structure."
+                }
+            ]
+        },
+        {
+            "title": "Caching Strategy",
+            "purpose": "Redis usage patterns: query caching, session management, cache invalidation, TTL policies",
+            "parent": "Data Layer",
+            "page_notes": [
+                {
+                    "content": "For performance optimization work."
+                }
+            ]
+        },
+        {
+            "title": "Microservices",
+            "purpose": "Architecture overview: microservices design, service responsibilities, inter-service gRPC communication, ports",
+            "page_notes": [
+                {
+                    "content": "Entry point for understanding service boundaries."
+                }
+            ]
+        },
+        {
+            "title": "Web API",
+            "purpose": "Service documentation: primary backend (port 9001), authentication, REST routing, request handling",
+            "parent": "Microservices",
+            "page_notes": [
+                {
+                    "content": "For understanding web-api responsibilities."
+                }
+            ]
+        },
+        {
+            "title": "Assistant API",
+            "purpose": "Service documentation: voice orchestration (port 9007), conversation management, GenericRequestor, audio pipelines",
+            "parent": "Microservices",
+            "page_notes": [
+                {
+                    "content": "Core service for voice agents."
+                }
+            ]
+        },
+        {
+            "title": "Endpoint API",
+            "purpose": "Service documentation: LLM endpoint management (port 9005), caching, retry policies, endpoint versioning",
+            "parent": "Microservices",
+            "page_notes": [
+                {
+                    "content": "For LLM provider integration."
+                }
+            ]
+        },
+        {
+            "title": "Integration API",
+            "purpose": "Service documentation: external integrations (port 9004), webhook handling, audit logging, third-party connectors",
+            "parent": "Microservices",
+            "page_notes": [
+                {
+                    "content": "For integration development."
+                }
+            ]
+        },
+        {
+            "title": "Document API",
+            "purpose": "Service documentation: document processing (port 9010), knowledge base management, vector search, embeddings",
+            "parent": "Microservices",
+            "page_notes": [
+                {
+                    "content": "For knowledge/RAG implementation."
+                }
+            ]
+        },
+        {
+            "title": "Voice Orchestration",
+            "purpose": "Core architecture: conversation lifecycle, state management, real-time audio processing, call flow",
+            "page_notes": [
+                {
+                    "content": "Central to understanding Rapida's orchestration engine."
+                }
+            ]
+        },
+        {
+            "title": "Conversation Management",
+            "purpose": "Implementation: conversation creation, message handling, state transitions, interruptions, recording, event streaming",
+            "parent": "Voice Orchestration",
+            "page_notes": [
+                {
+                    "content": "For understanding conversation lifecycle."
+                }
+            ]
+        },
+        {
+            "title": "Audio Input Processing",
+            "purpose": "Audio pipeline: preprocessing, denoising (RNNoise), VAD (Silero), end-of-speech detection, buffering, normalization",
+            "parent": "Voice Orchestration",
+            "page_notes": [
+                {
+                    "content": "For audio preprocessing customization."
+                }
+            ]
+        },
+        {
+            "title": "Audio Output Processing",
+            "purpose": "Audio pipeline: TTS synthesis, buffering (20ms chunks), interruption handling, streaming delivery, format handling",
+            "parent": "Voice Orchestration",
+            "page_notes": [
+                {
+                    "content": "For audio output customization."
+                }
+            ]
+        },
+        {
+            "title": "Telephony Integration",
+            "purpose": "Overview: telephony provider support (Twilio, Vonage, Exotel), call control, WebSocket streaming, audio formats",
+            "page_notes": [
+                {
+                    "content": "Foundation for telephony implementations. See provider-specific READMEs."
+                }
+            ]
+        },
+        {
+            "title": "Telephony Interface",
+            "purpose": "Core abstraction: Telephony and Streamer interfaces, common methods (MakeCall, IncomingCall, StatusCallback, Streamer)",
+            "parent": "Telephony Integration",
+            "page_notes": [
+                {
+                    "content": "Required interface for new telephony providers."
+                }
+            ]
+        },
+        {
+            "title": "Twilio Integration",
+            "purpose": "Provider implementation: TwiML generation, WebSocket streaming, μ-law audio handling (8kHz), event format",
+            "parent": "Telephony Integration",
+            "page_notes": [
+                {
+                    "content": "See api/assistant-api/internal/telephony/README.md for complete implementation guide."
+                }
+            ]
+        },
+        {
+            "title": "Vonage Integration",
+            "purpose": "Provider implementation: NCCO generation, WebSocket streaming, PCM audio handling (16kHz), JSON event format",
+            "parent": "Telephony Integration",
+            "page_notes": [
+                {
+                    "content": "See api/assistant-api/internal/telephony/README.md for complete implementation guide."
+                }
+            ]
+        },
+        {
+            "title": "Exotel Integration",
+            "purpose": "Provider implementation: custom field routing, WebSocket streaming, flexible audio format support, JSON events",
+            "parent": "Telephony Integration",
+            "page_notes": [
+                {
+                    "content": "See api/assistant-api/internal/telephony/README.md for complete implementation guide."
+                }
+            ]
+        },
+        {
+            "title": "AI Provider Integration",
+            "purpose": "Overview: transformer architecture for STT and TTS, supporting multiple AI providers with unified interface",
+            "page_notes": [
+                {
+                    "content": "Foundation for AI provider implementations. See provider-specific READMEs."
+                }
+            ]
+        },
+        {
+            "title": "Speech-to-Text Transformers",
+            "purpose": "STT implementations: SpeechToTextTransformer interface, providers (Google, Deepgram, Sarvam, AssemblyAI, Cartesia), audio format handling",
+            "parent": "AI Provider Integration",
+            "page_notes": [
+                {
+                    "content": "See api/assistant-api/internal/transformer/README.md for complete implementation guide."
+                }
+            ]
+        },
+        {
+            "title": "Text-to-Speech Transformers",
+            "purpose": "TTS implementations: TextToSpeechTransformer interface, providers (Google, Deepgram, Sarvam, Cartesia, Elevenlabs, Resemble), streaming audio",
+            "parent": "AI Provider Integration",
+            "page_notes": [
+                {
+                    "content": "See api/assistant-api/internal/transformer/README.md for complete implementation guide."
+                }
+            ]
+        },
+        {
+            "title": "Provider Configuration",
+            "purpose": "Technical reference: audio format mapping, credential management, model options, provider-specific settings, initialization options",
+            "parent": "AI Provider Integration",
+            "page_notes": [
+                {
+                    "content": "For configuring and extending AI providers."
+                }
+            ]
+        },
+        {
+            "title": "Frontend",
+            "purpose": "React UI (port 3000): voice agent interface, conversation UI, activity monitoring, provider/model configuration, deployment management",
+            "page_notes": [
+                {
+                    "content": "For UI development and customization."
+                }
+            ]
+        }
+    ]
+}

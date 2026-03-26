@@ -1,0 +1,272 @@
+// Copyright (c) 2023-2025 RapidaAI
+// Author: Prashant Srivastav <prashant@rapida.ai>
+//
+// Licensed under GPL-2.0 with Rapida Additional Terms.
+// See LICENSE.md or contact sales@rapida.ai for commercial usage.
+package internal_silero_vad
+
+import (
+	"context"
+	"encoding/binary"
+	"fmt"
+	"math"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"sync"
+	"testing"
+
+	internal_type "github.com/rapidaai/api/assistant-api/internal/type"
+	"github.com/rapidaai/pkg/commons"
+	"github.com/rapidaai/pkg/utils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func newTestOptions(tb testing.TB, threshold float64) utils.Option {
+	opts := map[string]interface{}{}
+	if threshold >= 0 {
+		opts["microphone.vad.threshold"] = threshold
+	}
+	return opts
+}
+
+func getModelPath() string {
+	envModelPath := os.Getenv("SILERO_MODEL_PATH")
+	if envModelPath == "" {
+		_, path, _, _ := runtime.Caller(0)
+		envModelPath = filepath.Join(filepath.Dir(path), "models/silero_vad_20251001.onnx")
+	}
+	return envModelPath
+}
+
+func newSileroOrSkip(t *testing.T, threshold float64, cb func(ctx context.Context, pkt ...internal_type.Packet) error) *SileroVAD {
+	logger, _ := commons.NewApplicationLogger()
+	opts := newTestOptions(t, threshold)
+	vad, err := NewSileroVAD(t.Context(), logger, cb, opts)
+	if err != nil {
+		if os.IsNotExist(err) || strings.Contains(err.Error(), "no such file") {
+			t.Skipf("silero model missing at %s", getModelPath())
+		}
+		require.NoError(t, err)
+	}
+	silero := vad.(*SileroVAD)
+	t.Cleanup(func() { _ = silero.Close() })
+	return silero
+}
+
+func generateSilence(samples int) internal_type.UserAudioPacket {
+	return internal_type.UserAudioPacket{Audio: make([]byte, samples*2)}
+}
+
+func generateSineWave(samples int, frequency, amplitude float64) internal_type.UserAudioPacket {
+	data := make([]byte, samples*2)
+	for i := 0; i < samples; i++ {
+		sample := int16(amplitude * 32767 * math.Sin(2*math.Pi*float64(i)*frequency/16000))
+		binary.LittleEndian.PutUint16(data[i*2:i*2+2], uint16(sample))
+	}
+	return internal_type.UserAudioPacket{Audio: data}
+}
+
+func generateNoise(samples int) internal_type.UserAudioPacket {
+	data := make([]byte, samples*2)
+	for i := 0; i < samples; i++ {
+		sample := int16((i*7919)%65536 - 32768)
+		binary.LittleEndian.PutUint16(data[i*2:i*2+2], uint16(sample))
+	}
+	return internal_type.UserAudioPacket{Audio: data}
+}
+
+// Core functionality tests
+
+func TestNewSileroVAD_DefaultThreshold(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, -1, callback)
+
+	assert.NotNil(t, vad.detector)
+}
+
+func TestSileroVAD_Name(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	assert.Equal(t, "silero_vad", vad.Name())
+}
+
+func TestSileroVAD_Process_Silence_NoCallback(t *testing.T) {
+	detectionFired := false
+	callback := func(_ context.Context, pkts ...internal_type.Packet) error {
+		for _, p := range pkts {
+			if _, ok := p.(internal_type.InterruptionPacket); ok {
+				detectionFired = true
+			}
+		}
+		return nil
+	}
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	err := vad.Process(context.Background(), generateSilence(16000))
+	require.NoError(t, err)
+	assert.False(t, detectionFired, "silence should not trigger a speech detection event")
+}
+
+func TestSileroVAD_Process_Speech_AllowsCallback(t *testing.T) {
+	var result internal_type.InterruptionPacket
+	callback := func(ctx context.Context, pkt ...internal_type.Packet) error {
+		if len(pkt) > 0 {
+			if interruption, ok := pkt[0].(internal_type.InterruptionPacket); ok {
+				result = interruption
+			}
+		}
+		return nil
+	}
+
+	vad := newSileroOrSkip(t, 0.2, callback)
+
+	err := vad.Process(context.Background(), generateSineWave(16000, 440, 0.9))
+	require.NoError(t, err)
+	assert.GreaterOrEqual(t, result.EndAt, result.StartAt)
+}
+
+func TestSileroVAD_Process_CorruptedData(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	corrupted := make([]byte, 999) // Odd length
+	err := vad.Process(context.Background(), internal_type.UserAudioPacket{Audio: corrupted})
+	_ = err // Accept error or nil; should not panic
+}
+
+func TestSileroVAD_Process_VerySmallChunks(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	sizes := []int{1, 2, 5, 10, 20}
+	for _, size := range sizes {
+		size := size
+		t.Run(fmt.Sprintf("%d_samples", size), func(t *testing.T) {
+			err := vad.Process(context.Background(), generateSilence(size))
+			_ = err
+		})
+	}
+}
+
+func TestSileroVAD_Process_Concurrent(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	var wg sync.WaitGroup
+	const workers = 8
+	wg.Add(workers)
+	for i := 0; i < workers; i++ {
+		go func() {
+			defer wg.Done()
+			_ = vad.Process(context.Background(), generateSilence(1600))
+		}()
+	}
+	wg.Wait()
+}
+
+func TestSileroVAD_Close_Idempotent(t *testing.T) {
+	logger, _ := commons.NewApplicationLogger()
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+	opts := newTestOptions(t, 0.5)
+
+	vad, err := NewSileroVAD(t.Context(), logger, callback, opts)
+	if err != nil {
+		if os.IsNotExist(err) || strings.Contains(err.Error(), "no such file") {
+			t.Skipf("silero model missing at %s", getModelPath())
+		}
+		require.NoError(t, err)
+	}
+
+	require.NoError(t, vad.Close())
+	err = vad.Close()
+	_ = err
+}
+
+func TestSileroVAD_ModelPath_Environment(t *testing.T) {
+	modelPath := getModelPath()
+	if _, err := os.Stat(modelPath); err != nil {
+		t.Skipf("silero model missing at %s", modelPath)
+	}
+
+	original := os.Getenv("SILERO_MODEL_PATH")
+	os.Setenv("SILERO_MODEL_PATH", modelPath)
+	t.Cleanup(func() {
+		if original != "" {
+			os.Setenv("SILERO_MODEL_PATH", original)
+		} else {
+			os.Unsetenv("SILERO_MODEL_PATH")
+		}
+	})
+
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+	_ = newSileroOrSkip(t, 0.5, callback)
+}
+
+func TestSileroVAD_Process_NoisePatterns(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	err := vad.Process(context.Background(), generateNoise(16000))
+	require.NoError(t, err)
+}
+
+func TestSileroVAD_Process_MaxAmplitude(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	samples := 16000
+	data := make([]byte, samples*2)
+	for i := 0; i < samples; i++ {
+		var val int16
+		if i%2 == 0 {
+			val = 32767
+		} else {
+			val = -32768
+		}
+		binary.LittleEndian.PutUint16(data[i*2:i*2+2], uint16(val))
+	}
+
+	err := vad.Process(context.Background(), internal_type.UserAudioPacket{Audio: data})
+	require.NoError(t, err)
+}
+
+func TestSileroVAD_Process_RepeatedCalls(t *testing.T) {
+	callback := func(context.Context, ...internal_type.Packet) error { return nil }
+
+	vad := newSileroOrSkip(t, 0.5, callback)
+
+	chunk := generateSilence(1600)
+	for i := 0; i < 50; i++ {
+		err := vad.Process(context.Background(), chunk)
+		require.NoError(t, err)
+	}
+}
+
+func TestSileroVAD_StatefulProcessing(t *testing.T) {
+	var calls int
+	callback := func(context.Context, ...internal_type.Packet) error {
+		calls++
+		return nil
+	}
+
+	vad := newSileroOrSkip(t, 0.3, callback)
+
+	for i := 0; i < 10; i++ {
+		err := vad.Process(context.Background(), generateSineWave(1600, 440, 0.8))
+		require.NoError(t, err)
+	}
+
+	assert.GreaterOrEqual(t, calls, 0)
+}

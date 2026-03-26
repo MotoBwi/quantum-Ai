@@ -1,0 +1,30 @@
+// Copyright (c) 2023-2025 RapidaAI
+// Author: Prashant Srivastav <prashant@rapida.ai>
+//
+// Licensed under GPL-2.0 with Rapida Additional Terms.
+// See LICENSE.md or contact sales@rapida.ai for commercial usage.
+package endpoint_client_builders
+
+import (
+	"google.golang.org/protobuf/types/known/anypb"
+
+	protos "github.com/rapidaai/protos"
+)
+
+type InputInvokeBuilder interface {
+	Invoke(
+		endpointDef *protos.EndpointDefinition,
+		args map[string]*anypb.Any,
+		metadata map[string]*anypb.Any,
+		options map[string]*anypb.Any,
+	) *protos.InvokeRequest
+	Options(
+		opts map[string]interface{},
+		options map[string]*anypb.Any) map[string]*anypb.Any
+	Metadata(
+		opts map[string]interface{},
+		options map[string]*anypb.Any) map[string]*anypb.Any
+	Arguments(
+		opts map[string]interface{},
+		arguments map[string]*anypb.Any) map[string]*anypb.Any
+}
